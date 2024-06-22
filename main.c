@@ -1,5 +1,6 @@
 #include "driver.h"
 #include "snake.h"
+#include <stdlib.h>
 
 ;void game_init(){
     JOY_init();
@@ -14,18 +15,22 @@
 
 uint8_t gameboard_to_hex(uint8_t x,uint8_t y){
     uint8_t gameboard_index = y * 16 + x / 8;
-    if (gameboard[gameboard_index] == '0'){
-        return 0x00;
+    
+    switch (gameboard[gameboard_index]) {
+        case '0':
+            return 0x00;
+        case 'a':
+            return apple[x % 8];
+        case 'h':
+            return rightSnakeHead[x % 8];
+        case 't':
+            return leftSnakeTail[x % 8];
+        default:
+            return 0x00;
     }
-    if (gameboard[gameboard_index] == 'a'){
-        return apple[x % 8];
-    }
-    if (gameboard[gameboard_index] == 'h'){
-        return rightSnakeHead[x % 8];
-    }
-    if (gameboard[gameboard_index] == 't'){
-        return leftSnakeTail[x % 8];
-    }
+    //use switch to rewrite the above if statements
+
+
     return 0x00;
 }
 
@@ -43,4 +48,15 @@ void display(){ //x horizontal y vertical
 int main(){
     game_init();
     display();
+    int randseed = 0;
+    while (!JOY_act_pressed()){
+        randseed++;
+        DLY_ms1(100);
+        //wait for the button to be pressed
+    }
+    srand(randseed);
+    //start the game
+    while (1){
+
+    }
 }
