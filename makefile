@@ -75,10 +75,6 @@ hex:	$(TARGET).hex removetemp size removeelf
 
 asm:	$(TARGET).asm removetemp size removeelf
 
-flash:	$(TARGET).bin size removeelf
-	@echo "Uploading to MCU ..."
-	@$(ISPTOOL)
-
 clean:
 	@echo "Cleaning all up ..."
 	@$(CLEAN)
