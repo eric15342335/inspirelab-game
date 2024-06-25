@@ -105,6 +105,12 @@ static inline uint8_t JOY_right_pressed(void) {
   }
 }*/
 void JOY_sound(uint16_t freq, uint16_t dur) {
+  int sysclk = 1000000;
+  // Calculate the delay duration based on the frequency
+  if (sysclk / 2 < freq) {
+    return;
+  }
+  uint32_t delay_us = sysclk / (2 * freq);
   while (dur--) {
     #if JOY_SOUND == 1
     if (freq) {
@@ -112,12 +118,6 @@ void JOY_sound(uint16_t freq, uint16_t dur) {
     }
     #endif
 
-    int sysclk = 1000000;
-    // Calculate the delay duration based on the frequency
-    if (sysclk / 2 < freq) {
-        return;
-    }
-    uint32_t delay_us = sysclk / (2 * freq);
     DLY_us(delay_us);
 
     PIN_high(PIN_BEEP);
