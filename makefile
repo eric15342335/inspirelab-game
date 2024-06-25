@@ -23,11 +23,10 @@ CC       = $(PREFIX)-gcc
 OBJCOPY  = $(PREFIX)-objcopy
 OBJDUMP  = $(PREFIX)-objdump
 OBJSIZE  = $(PREFIX)-size
-NEWLIB   = /usr/include/newlib
 CLEAN    = rm -f *.lst *.obj *.cof *.list *.map *.eep.hex *.o *.d
 
 # Compiler Flags
-CFLAGS   = $(CPUARCH) -DF_CPU=$(F_CPU) -I$(NEWLIB) -I$(INCLUDE) -I. -L$(INCLUDE)
+CFLAGS   = $(CPUARCH) -DF_CPU=$(F_CPU) -I$(INCLUDE) -I. -L$(INCLUDE)
 CFLAGS  += -g -Os -flto -ffunction-sections -fno-builtin -Wall
 LDFLAGS  = -T$(LDSCRIPT) -nostdlib -lgcc -static-libgcc -Wl,--gc-sections
 CFILES   = $(MAINFILE) $(wildcard $(INCLUDE)/*.c) $(wildcard $(INCLUDE)/*.S)
@@ -93,3 +92,5 @@ removetemp:
 removeelf:
 	@echo "Removing $(TARGET).elf ..."
 	@rm -f $(TARGET).elf
+
+.PHONY: all elf bin hex asm clean size removetemp removeelf
