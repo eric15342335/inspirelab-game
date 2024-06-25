@@ -65,6 +65,17 @@ void OLED_setpos(uint8_t x, uint8_t y);
 void OLED_fill(uint8_t p);
 void OLED_draw_bmp(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t* bmp);
 
+void OLED_write(char c);          // OLED write a character or handle control characters
+void OLED_print(char* str);       // OLED print string
+void OLED_println(char* str);     // OLED print string with newline
+void OLED_printD(uint32_t value); // print decimal value
+void OLED_printL(uint32_t value); // print hex long value
+void OLED_printW(uint16_t value); // print hex word value
+void OLED_printB(uint8_t value);  // print hex byte value
+#define OLED_newline() OLED_write('\n')   // print newline
+#define OLED_printS OLED_print            // alias
+
+
 #ifdef __cplusplus
 };
 #endif
