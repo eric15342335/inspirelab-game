@@ -1,16 +1,38 @@
 #include "driver.h"
 #include "snake.h"
-#include <stdlib.h>
 
 ;void game_init(){
     JOY_init();
     for (uint8_t i = 0;i < 128 ; i++){
         gameboard[i] = '0';
     }
-    gameboard[33] = 'h';
+    gameboard[snakeHead] = 'H';
     gameboard[43] = 'a';
-    gameboard[32] = 't';
+    gameboard[snakeHead - 1] = 't';
+    //reset the gameboard
+}
 
+int8_t direction(int8_t currentDirection){
+    if (JOY_up_pressed()){
+        return -12;
+    }
+    if (JOY_down_pressed()){
+        return 12;
+    }
+    if (JOY_left_pressed()){
+        return -1;
+    }
+    if (JOY_right_pressed()){
+        return 1;
+    }
+    return currentDirection;
+}
+
+bool checkValidMovement(int8_t currentDirection){
+    if (snakeHead + currentDirection < 0 || snakeHead + currentDirection > 127){
+        return false;
+    }
+    return true;
 }
 
 uint8_t gameboard_to_hex(uint8_t x,uint8_t y){
@@ -28,9 +50,6 @@ uint8_t gameboard_to_hex(uint8_t x,uint8_t y){
         default:
             return 0x00;
     }
-    //use switch to rewrite the above if statements
-
-
     return 0x00;
 }
 
@@ -51,12 +70,24 @@ int main(){
     int randseed = 0;
     while (!JOY_act_pressed()){
         randseed++;
-        DLY_ms1(100);
+        DLY_ms(100);
         //wait for the button to be pressed
     }
-    srand(randseed);
+    int8_t currentDirection = 0;
     //start the game
     while (1){
+        for (uint8_t i = 0; i < 3; i++){
+            currentDirection = direction(currentDirection);
+            DLY_ms(125);
+        }
+        //get the direction
 
+        //move the snake
+
+        //check if the snake is dead
+        //check if the snake has eaten the apple
+        //generate a new apple
+        //display the gameboard
+        //wait for a while
     }
 }
