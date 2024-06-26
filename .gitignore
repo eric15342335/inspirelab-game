@@ -3,3 +3,4 @@
 *.elf
 *.o
 .vscode/
+!.vscode/settings.json

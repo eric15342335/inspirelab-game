@@ -2,3 +2,4 @@ venv/
 *.txt
 *.pyc
 *.png
+!requirements.txt

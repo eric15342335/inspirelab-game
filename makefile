@@ -27,7 +27,7 @@ CLEAN    = rm -f *.lst *.obj *.cof *.list *.map *.eep.hex *.o *.d
 
 # Compiler Flags
 CFLAGS   = $(CPUARCH) -DF_CPU=$(F_CPU) -I$(INCLUDE) -I. -L$(INCLUDE)
-CFLAGS  += -g -Os -flto -ffunction-sections -fno-builtin -Wall
+CFLAGS  += -g -Os -flto -ffunction-sections -fno-builtin -Wall -Wextra -Wswitch
 LDFLAGS  = -T$(LDSCRIPT) -nostdlib -lgcc -static-libgcc -Wl,--gc-sections
 CFILES   = $(MAINFILE) $(wildcard $(INCLUDE)/*.c) $(wildcard $(INCLUDE)/*.S)
 
