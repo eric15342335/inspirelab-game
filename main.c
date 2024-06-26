@@ -1,7 +1,7 @@
 #include "driver.h"
 #include "snake.h"
 
-;void game_init(){
+void game_init(){
     JOY_init();
     for (uint8_t i = 0;i < 128 ; i++){
         gameboard[i] = '0';
@@ -13,26 +13,41 @@
 }
 
 int8_t direction(int8_t currentDirection){
-    if (JOY_up_pressed()){
+    if (JOY_up_pressed() && gameboard[snakeHead] != 'f'){
         return -12;
     }
-    if (JOY_down_pressed()){
+    if (JOY_down_pressed() && gameboard[snakeHead] != 'F'){
         return 12;
     }
-    if (JOY_left_pressed()){
+    if (JOY_left_pressed() && gameboard[snakeHead] != 'h'){
         return -1;
     }
-    if (JOY_right_pressed()){
+    if (JOY_right_pressed() && gameboard[snakeHead] != 'H'){
         return 1;
     }
+    //check if the snake is running to itself
     return currentDirection;
 }
 
-bool checkValidMovement(int8_t currentDirection){
+bool checkWallAndItself(int8_t currentDirection){
     if (snakeHead + currentDirection < 0 || snakeHead + currentDirection > 127){
+        return true;
+    }
+    else if (gameboard[snakeHead] = 'H' && currentDirection == 1 && snakeHead % 16 == 15){
+        return true;
+    }
+    else if (gameboard[snakeHead] = 'h' && currentDirection == -1 && snakeHead % 16 == 0){
+        return true;
+    }
+    //check whether the snake hits the wall
+
+    if (gameboard[snakeHead + currentDirection] != '0' || gameboard[snakeHead + currentDirection] != 'a'){
         return false;
     }
-    return true;
+    else{
+        return true;
+    }
+    //check whether the snake hits itself
 }
 
 uint8_t gameboard_to_hex(uint8_t x,uint8_t y){
@@ -81,11 +96,14 @@ int main(){
             DLY_ms(125);
         }
         //get the direction
-
-        //move the snake
-
+        if (!checkWallAndItself(currentDirection)){
+            break;
+        }
         //check if the snake is dead
+
+        
         //check if the snake has eaten the apple
+        //move the snake
         //generate a new apple
         //display the gameboard
         //wait for a while
