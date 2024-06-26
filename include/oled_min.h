@@ -75,6 +75,8 @@ void OLED_printB(uint8_t value);  // print hex byte value
 #define OLED_newline() OLED_write('\n')   // print newline
 #define OLED_printS OLED_print            // alias
 
+void OLED_scrollDisplay(void);
+void OLED_clear(void);
 
 #ifdef __cplusplus
 };
