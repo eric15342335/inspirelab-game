@@ -6,18 +6,18 @@ void game_init(){
     for (uint8_t i = 0;i < 128 ; i++){
         gameboard[i] = '0';
     }
-    gameboard[snakeHead] = 'H';
     gameboard[43] = 'a';
-    gameboard[snakeHead - 1] = 't';
+    gameboard[snakeTail] = 't';
+    gameboard[snakeHead] = 'H';
     //reset the gameboard
 }
 
 int8_t direction(int8_t currentDirection){
     if (JOY_up_pressed() && gameboard[snakeHead] != 'f'){
-        return -12;
+        return -16;
     }
     if (JOY_down_pressed() && gameboard[snakeHead] != 'F'){
-        return 12;
+        return 16;
     }
     if (JOY_left_pressed() && gameboard[snakeHead] != 'h'){
         return -1;
@@ -33,10 +33,10 @@ bool checkWallAndItself(int8_t currentDirection){
     if (snakeHead + currentDirection < 0 || snakeHead + currentDirection > 127){
         return true;
     }
-    else if (gameboard[snakeHead] = 'H' && currentDirection == 1 && snakeHead % 16 == 15){
+    else if (gameboard[snakeHead] == 'H' && currentDirection == 1 && snakeHead % 16 == 15){
         return true;
     }
-    else if (gameboard[snakeHead] = 'h' && currentDirection == -1 && snakeHead % 16 == 0){
+    else if (gameboard[snakeHead] == 'h' && currentDirection == -1 && snakeHead % 16 == 0){
         return true;
     }
     //check whether the snake hits the wall
@@ -50,6 +50,168 @@ bool checkWallAndItself(int8_t currentDirection){
     //check whether the snake hits itself
 }
 
+bool checkApple(int8_t currentDirection){
+    return gameboard[snakeHead + currentDirection] == 'a';
+}
+    //check whether the next step is an apple
+
+void moveSnake(int8_t currentDirection, bool apple){
+    char newhead;
+    switch(currentDirection){
+        case 1:
+            newhead = 'H';
+            break;
+        case -1:
+            newhead = 'h';
+            break;
+        case 16:
+            newhead = 'F';
+            break;
+        case -16:
+            newhead = 'f';
+            break;
+        default:
+            newhead = '0'; //shut up compiler
+            break;
+    }
+    gameboard[snakeHead+currentDirection] = newhead;
+    char oldHead;
+    if (gameboard[snakeHead] == 'H'){
+        switch (currentDirection){
+        case 16:
+            oldHead = 'p';
+            break;
+        case -16:
+            oldHead = 'b';
+            break;
+        case 1:
+            oldHead = '-';
+            break;
+        default:
+            break;
+        }
+    }
+    else if (gameboard[snakeHead] == 'h'){
+        switch (currentDirection){
+        case 16:
+            oldHead = 'q';
+            break;
+        case -16:
+            oldHead = 'd';
+            break;
+        case -1:
+            oldHead = '-';
+            break;
+        default:
+            break;
+        }
+    }
+    else if (gameboard[snakeHead] == 'F'){
+        switch (currentDirection){
+        case 1:
+            oldHead = 'q';
+            break;
+        case -1:
+            oldHead = 'b';
+            break;
+        case 16:
+            oldHead = '|';
+            break;
+        default:
+            break;
+        }
+    }
+    else if (gameboard[snakeHead] == 'f'){
+        switch (currentDirection){
+        case 1:
+            oldHead = 'p';
+            break;
+        case -1:
+            oldHead = 'd';
+            break;
+        case -16:
+            oldHead = '|';
+            break;
+        default:
+            break;
+        }
+    }
+    else{
+        oldHead = '0'; //shut up compiler
+    }
+    gameboard[snakeHead] = oldHead;
+    snakeHead += currentDirection;
+    //head movement
+    if (apple){
+        return;
+    }
+    //if the snake eats the apple, the tail will not move
+    char newTail;
+    if (gameboard[snakeTail] == 't'){
+        switch (gameboard[snakeTail + 1]){
+            case 'p':
+                newTail = 'U';
+                break;
+            case 'b':
+                newTail = 'u';
+                break;
+            case '-':
+                newTail = 't';
+                break;
+            default:
+                break;
+        }
+    }
+    else if (gameboard[snakeTail] == 'u'){
+        switch (gameboard[snakeTail + 16]){
+            case 'q':
+                newTail = 'T';
+                break;
+            case 'd':
+                newTail = 't';
+                break;
+            case '|':
+                newTail = 'U';
+                break;
+            default:
+                break;
+        }
+    }
+    else if (gameboard[snakeTail] == 'U'){
+        switch (gameboard[snakeTail - 1]){
+            case 'p':
+                newTail = 'U';
+                break;
+            case 'b':
+                newTail = 'u';
+                break;
+            case '-':
+                newTail = 't';
+                break;
+            default:
+                break;
+        }
+    }
+    else if (gameboard[snakeTail] == 'T'){
+        switch (gameboard[snakeTail - 16]){
+            case 'q':
+                newTail = 'T';
+                break;
+            case 'd':
+                newTail = 't';
+                break;
+            case '|':
+                newTail = 'U';
+                break;
+            default:
+                break;
+        }
+    }
+    else{
+        newTail = '0'; //shut up compiler
+    }
+}
+
 uint8_t gameboard_to_hex(uint8_t x,uint8_t y){
     uint8_t gameboard_index = y * 16 + x / 8;
     
@@ -58,10 +220,34 @@ uint8_t gameboard_to_hex(uint8_t x,uint8_t y){
             return 0x00;
         case 'a':
             return apple[x % 8];
-        case 'h':
+        case 'H':
             return rightSnakeHead[x % 8];
+        case 'F':
+            return downSnakeHead[x % 8];
+        case 'f':
+            return upSnakeHead[x % 8];
+        case 'h':
+            return leftSnakeHead[x % 8];
+        case '|':
+            return horizontalSnakeBody[x % 8];
+        case '-':
+            return verticalSnakeBody[x % 8];
+        case 'U':
+            return upSnakeTail[x % 8];
+        case 'u':
+            return downSnakeTail[x % 8];
+        case 'T':
+            return rightSnakeTail[x % 8];
         case 't':
             return leftSnakeTail[x % 8];
+        case 'b':
+            return topToLeft[x % 8];
+        case 'd':
+            return topToRight[x % 8];
+        case 'p':
+            return bottomToLeft[x % 8];
+        case 'q':
+            return bottomToRight[x % 8];
         default:
             return 0x00;
     }
@@ -83,9 +269,12 @@ int main(){
     game_init();
     display();
     int randseed = 0;
-    while (!JOY_act_pressed()){
+    while (1){
         randseed++;
         DLY_ms(100);
+        if (JOY_pad_pressed()){
+            break;
+        }
         //wait for the button to be pressed
     }
     int8_t currentDirection = 0;
@@ -101,11 +290,15 @@ int main(){
         }
         //check if the snake is dead
 
-        
+        bool apple = checkApple(currentDirection);
         //check if the snake has eaten the apple
+
+        moveSnake(currentDirection,apple);
         //move the snake
         //generate a new apple
+        display();
         //display the gameboard
+        DLY_ms(100);
         //wait for a while
     }
 }
