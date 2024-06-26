@@ -201,7 +201,7 @@ void playMusic() { // sizeof gives the number of bytes, each int value is
         intToChars(noteDuration, noteDurationChar);
         OLED_println(noteDurationChar);
         JOY_sound(melody[thisNote], noteDuration);
-        // JOY_DLY_ms(noteDuration);
+        JOY_DLY_ms(10);
     }
 }
 
