@@ -1,5 +1,9 @@
+"""
+pip3 install PyQt5 pillow
+"""
 import sys
-from PyQt5.QtWidgets import QAction, QApplication, QWidget, QGridLayout, QPushButton, QVBoxLayout, QTextEdit, QScrollArea, QMenuBar, QFileDialog, QMessageBox, QSplitter, QInputDialog
+from PyQt5.QtWidgets import QAction, QApplication, QWidget, QGridLayout, QPushButton, QVBoxLayout, QTextEdit, \
+    QScrollArea, QMenuBar, QFileDialog, QMessageBox, QSplitter, QInputDialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage
 import re
@@ -13,6 +17,7 @@ grid_height = 64
 
 
 class ButtonGrid(QWidget):
+    colorThreshold = 50
 
     def __init__(self, width=grid_width, height=grid_height):
         super().__init__()
@@ -46,6 +51,10 @@ class ButtonGrid(QWidget):
         white_action = QAction("Set All White", self)
         white_action.triggered.connect(self.set_all_white)
         edit_menu.addAction(white_action)
+
+        threshold_action = QAction("Change color threshold", self)
+        edit_menu.addAction(threshold_action)
+        threshold_action.triggered.connect(self.change_color_threshold)
 
         load_image_action = QAction("Load Image", self)
         load_image_action.triggered.connect(self.load_image_file)
@@ -129,20 +138,23 @@ class ButtonGrid(QWidget):
 
     def save_to_file(self):
         options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save C Array", "", "Text Files (*.txt);;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save C Array", "", "Text Files (*.txt);;All Files (*)",
+                                                   options=options)
         if file_name:
             with open(file_name, "w") as file:
                 file.write(self.output_text.toPlainText())
 
     def input_text(self):
-        text, ok = QInputDialog.getMultiLineText(self, "Input C Array", "Enter C array:", "", flags=Qt.Dialog | Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
+        text, ok = QInputDialog.getMultiLineText(self, "Input C Array", "Enter C array:", "",
+                                                 flags=Qt.Dialog | Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
         if ok and text:
             self.output_text.setPlainText(text)
             self.parse_c_array(text)
 
     def load_from_file(self):
         options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getOpenFileName(self, "Load C Array", "", "Text Files (*.txt);;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getOpenFileName(self, "Load C Array", "", "Text Files (*.txt);;All Files (*)",
+                                                   options=options)
         if file_name:
             with open(file_name, "r") as file:
                 data = file.read()
@@ -151,7 +163,8 @@ class ButtonGrid(QWidget):
 
     def load_image_file(self):
         options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getOpenFileName(self, "Load PNG Image", "", "PNG Files (*.png);;All Files (*)", options=options)
+        file_name, _ = QFileDialog.getOpenFileName(self, "Load PNG Image", "", "PNG Files (*.png);;All Files (*)",
+                                                   options=options)
         if file_name:
             image = QImage(file_name)
             if image.isNull():
@@ -166,30 +179,31 @@ class ButtonGrid(QWidget):
             for y in range(self.height):
                 for x in range(self.width):
                     color = image.pixelColor(x, y)
-                    self.buttons[y][x] = (1 if color.value() < 128 else 0)  # Assuming a threshold for black/white
+                    self.buttons[y][x] = (
+                        1 if color.value() > self.colorThreshold else 0)  # Assuming a threshold for black/white
                     button = self.grid_layout.itemAtPosition(y, x).widget()
                     button.setStyleSheet(button_color if self.buttons[y][x] == 1 else background_color)
 
     def load_gif_file(self):
         options = QFileDialog.Options()
-        file_name, _ = QFileDialog.getOpenFileName(self,"Load GIF Image","",
-            "GIF Files (*.gif);;All Files (*)",options=options
-        )
+        file_name, _ = QFileDialog.getOpenFileName(self, "Load GIF Image", "",
+                                                   "GIF Files (*.gif);;All Files (*)", options=options
+                                                   )
         if file_name:
             gif = Image.open(file_name)
             if gif.size != (self.width, self.height):
-                QMessageBox.warning(self,"Error",
-                    f"GIF must be exactly {self.width}x{self.height} pixels.",
-                )
+                QMessageBox.warning(self, "Error",
+                                    f"GIF must be exactly {self.width}x{self.height} pixels.",
+                                    )
                 return
             try:
                 gif_frames = ImageSequence.Iterator(gif)
                 for i, frame in enumerate(gif_frames):
                     frame = frame.convert("RGB")
                     frame.save(f"{file_name.rsplit('.', 1)[0]}_{i}.png")
-                QMessageBox.information(self,"Success",
-                    f"GIF frames saved as {file_name.rsplit('.', 1)[0]}_<frame>.png",
-                )
+                QMessageBox.information(self, "Success",
+                                        f"GIF frames saved as {file_name.rsplit('.', 1)[0]}_<frame>.png",
+                                        )
             except Exception as e:
                 QMessageBox.warning(self, "Error", f"Failed to process GIF: {e}")
 
@@ -206,6 +220,12 @@ class ButtonGrid(QWidget):
                 self.buttons[y][x] = 1
                 button = self.grid_layout.itemAtPosition(y, x).widget()
                 button.setStyleSheet(button_color)
+
+    def change_color_threshold(self):
+        threshold, ok = QInputDialog.getInt(self, "Change Color Threshold", "Enter new threshold (0-255):",
+                                            self.colorThreshold, 0, 255)
+        if ok:
+            self.colorThreshold = threshold
 
     def parse_c_array(self, data):
         # Find the array elements within the braces
