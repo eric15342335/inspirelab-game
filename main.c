@@ -305,4 +305,6 @@ int main(){
         DLY_ms(100);
         //wait for a while
     }
+    OLED_println("Game Over!");
+    DLY_ms(2000);
 }
