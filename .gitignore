@@ -4,3 +4,6 @@
 *.o
 .vscode/
 !.vscode/settings.json
+*.asm
+*.lst
+*.map
