@@ -215,6 +215,7 @@ void moveSnake(int8_t currentDirection, bool apple){
         newTail = '0';
         newTailPos = 0; //shut up compiler
     }
+    gameboard[snakeTail] = '0';
     gameboard[newTailPos] = newTail;
     snakeTail = newTailPos;
 }
@@ -235,9 +236,9 @@ uint8_t gameboard_to_hex(uint8_t x,uint8_t y){
             return upSnakeHead[x % 8];
         case 'h':
             return leftSnakeHead[x % 8];
-        case '|':
-            return horizontalSnakeBody[x % 8];
         case '-':
+            return horizontalSnakeBody[x % 8];
+        case '|':
             return verticalSnakeBody[x % 8];
         case 'U':
             return upSnakeTail[x % 8];
@@ -262,14 +263,15 @@ uint8_t gameboard_to_hex(uint8_t x,uint8_t y){
 }
 
 void display(){ //x horizontal y vertical
+    OLED_clear();
     uint8_t y, x;
     for (y = 0; y < 8; y++){
         JOY_OLED_data_start(y);
         for (x = 0; x < 128; x++){
             JOY_OLED_send(gameboard_to_hex(x,y));
+        }
+        JOY_OLED_end();
     }
-    JOY_OLED_end();
-  }
 }
 
 int main(){
@@ -289,7 +291,7 @@ int main(){
             DLY_ms(125);
         }
         //get the direction
-        if (!checkWallAndItself(currentDirection)){
+        if (checkWallAndItself(currentDirection)){
             break;
         }
         //check if the snake is dead
