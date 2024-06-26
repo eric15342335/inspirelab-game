@@ -81,7 +81,8 @@ void display(const uint8_t pixelArray[], uint16_t size) {
     }
 }
 
-void shiftImage(offset_t offsetCoord, const uint8_t oldImage[], uint8_t newImage[], ScreenCoord coords) {
+void shiftImage(offset_t offsetCoord, const uint8_t oldImage[], uint8_t newImage[],
+    ScreenCoord coords) {
     // Clear the new image
     for (int i = 0; i < coords.x * (coords.y / 8); i++) {
         newImage[i] = 0;
@@ -110,7 +111,6 @@ void shiftImage(offset_t offsetCoord, const uint8_t oldImage[], uint8_t newImage
     }
 }
 
-
 int main() {
     JOY_init();
     OLED_fill(0x00);
@@ -124,29 +124,24 @@ int main() {
     DLY_ms(500);
     for (int i = 0; i < 64; i++) {
         display(image_data_copy, 1024);
-        shiftImage(
-            (offset_t){i, i%6-3}, image_data, image_data_copy, (ScreenCoord){128, 64});
-        //negateImage(image_data_copy, 1024);
-        //JOY_sound(i * 20+200, 3);
+        shiftImage((offset_t){i, i % 6 - 3}, image_data, image_data_copy,
+            (ScreenCoord){128, 64});
+        // negateImage(image_data_copy, 1024);
+        JOY_sound(i * 20 + 200, 15);
     }
 
     for (int i = 64; i >= 0; i--) {
         display(image_data_copy, 1024);
-        shiftImage(
-            (offset_t){-i, i%6-3}, image_data, image_data_copy, (ScreenCoord){128, 64});
+        shiftImage((offset_t){-i, i % 6 - 3}, image_data, image_data_copy,
+            (ScreenCoord){128, 64});
         // negateImage(image_data_copy, 1024);
-        //JOY_sound(i * 20+200, 3);
+        JOY_sound(i * 20 + 200, 15);
     }
     OLED_fill(0x00);
     OLED_println("Press the right button to start the game");
-    while (!JOY_act_pressed()) {
-    }
-    OLED_println("Press the again button to start the game");
     DLY_ms(1000);
-    while (!JOY_act_pressed()) {
-        OLED_println("delay");
-        DLY_ms(100);
-    }
+    // while (!JOY_act_pressed()) {
+    // }
     OLED_fill(0x00);
     // start the game
     playMusic();
