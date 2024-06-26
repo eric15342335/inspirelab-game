@@ -1,6 +1,7 @@
 char gameboard[128] = {};
 
-uint8_t snakeHead = 33; //init snake head location
+uint8_t snakeHead = 34; //init snake head location
+const uint8_t init_snakeBody = 33; //init snake body location
 uint8_t snakeTail = 32; //init snake tail location
 
 

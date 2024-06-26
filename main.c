@@ -8,6 +8,7 @@ void game_init() {
     }
     gameboard[43] = 'a';
     gameboard[snakeTail] = 't';
+    gameboard[init_snakeBody] = '-';
     gameboard[snakeHead] = 'H';
     // reset the gameboard
 }
