@@ -105,27 +105,22 @@ static inline uint8_t JOY_right_pressed(void) {
   }
 }*/
 void JOY_sound(uint16_t freq, uint16_t dur) {
-  int sysclk = 1000000;
-  // Calculate the delay duration based on the frequency
-  if (sysclk / 2 < freq) {
-    return;
-  }
-  uint32_t delay_us = sysclk / (2 * freq);
-  while (dur--) {
-    #if JOY_SOUND == 1
-    if (freq) {
-      PIN_low(PIN_BEEP);
-    }
-    #endif
-
+  const int sysclk = CLK_DIV == 0 ? F_CPU : F_CPU / CLK_DIV;
+  if (sysclk < freq) return;
+  uint32_t delay_us = sysclk / 2 / freq;
+  uint32_t dur_us = dur * 1000;
+  while (dur_us > 1000) {
+    if (freq && JOY_SOUND) PIN_low(PIN_BEEP);
     DLY_us(delay_us);
-
     PIN_high(PIN_BEEP);
-
-    // Calculate the delay duration based on the frequency
-    delay_us = sysclk / (2 * freq);
     DLY_us(delay_us);
+    dur_us -= 1000;
+    if (dur_us > delay_us*2) dur_us -= delay_us*2;
   }
+  if (freq && JOY_SOUND) PIN_low(PIN_BEEP);
+  DLY_us(delay_us);
+  PIN_high(PIN_BEEP);
+  DLY_us(delay_us);
 }
 
 // Pseudo random number generator
