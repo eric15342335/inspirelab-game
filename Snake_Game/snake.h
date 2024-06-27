@@ -1,3 +1,5 @@
+#pragma once
+
 char gameboard[128] = {};
 
 uint8_t snakeHead = 34; //init snake head location

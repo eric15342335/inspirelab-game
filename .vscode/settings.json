@@ -3,6 +3,7 @@
     "files.associations": {
         "Doxyfile": "doxyfile",
         "stdlib.h": "c",
-        "driver.h": "c"
+        "driver.h": "c",
+        "image.h": "c"
     },
 }

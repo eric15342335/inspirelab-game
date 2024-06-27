@@ -1,4 +1,7 @@
+#pragma once
 // based on https://github.com/robsoncouto/arduino-songs
+
+// #define DEBUG_SOUND_PRINTF
 
 #define NOTE_B0 31
 #define NOTE_C1 33
@@ -95,18 +98,14 @@
 // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
 // !!negative numbers are used to represent dotted notes,
 // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
-const int melody[] = {NOTE_E5, 8, NOTE_D5, 8, NOTE_FS4, 4, NOTE_GS4, 4, NOTE_CS5, 8, NOTE_B4,
-    8, NOTE_D4, 4, NOTE_E4, 4, NOTE_B4, 8, NOTE_A4, 8, NOTE_CS4, 4, NOTE_E4, 4, NOTE_A4,
-    2};
-
+const int melody[] = {NOTE_E5, 8, NOTE_D5, 8, NOTE_FS4, 4, NOTE_GS4, 4, NOTE_CS5, 8,
+    NOTE_B4, 8, NOTE_D4, 4, NOTE_E4, 4, NOTE_B4, 8, NOTE_A4, 8, NOTE_CS4, 4, NOTE_E4, 4,
+    NOTE_A4, 2};
 
 typedef struct noterange {
     int start;
     int end; // no need to *2, and is exclusive
 } noterange_t;
-
-void playMusic(noterange_t range);
-void playAllMusic(void);
 
 typedef struct note {
     int frequency;
@@ -116,11 +115,52 @@ typedef struct note {
 const note_t notes[] = {{400, 0.00}, {500, 0.00}, {400, 0.00}, {400, 0.00}, {400, 0.00},
     {500, 0.00}, {500, 0.00}, {500, 0.00}, {400, 0.00}, {400, 0.00}};
 
-void playNotes();
+void playMusic(noterange_t range) {
+    // change this to make the song slower or faster
+    int tempo = 150;
+    // this calculates the duration of a whole note in ms
+    int wholenote = (60000 * 4) / tempo;
 
-typedef struct offset {
-    int x;
-    int y;
-} offset_t;
+    int divider = 0, noteDuration = 0;
 
-typedef offset_t ScreenCoord;
+    // iterate over the notes of the melody.
+    // Remember, the array is twice the number of notes (notes + durations)
+    for (int thisNote = range.start * 2; thisNote < range.end * 2;
+         thisNote += 2) {
+
+        // calculates the duration of each note
+        divider = melody[thisNote + 1];
+        if (divider > 0) {
+            // regular note, just proceed
+            noteDuration = (wholenote) / divider;
+        }
+        else if (divider < 0) {
+            // dotted notes are represented with negative durations!!
+            noteDuration = (wholenote) / abs(divider);
+            noteDuration *= 1.5; // increases the duration in half for dotted notes
+        }
+#ifdef DEBUG_SOUND_PRINTF
+        OLED_print("note=");
+        OLED_printD(melody[thisNote]);
+        OLED_print(", dur=");
+        OLED_printD(noteDuration);
+        OLED_println("");
+#endif
+        JOY_sound(melody[thisNote], noteDuration);
+    }
+}
+
+void playAllMusic(void) {
+    // sizeof gives the number of bytes, each int value is
+    // composed of two bytes (16 bits)
+    // there are two values per note (pitch and duration), so for each note
+    // there are four bytes
+    int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+    playMusic((noterange_t){0, notes});
+}
+
+void playNotes() {
+    for (uint8_t i = 0; i < sizeof(notes) / sizeof(notes[0]); i++) {
+        JOY_sound(notes[i].frequency, 10);
+    }
+}

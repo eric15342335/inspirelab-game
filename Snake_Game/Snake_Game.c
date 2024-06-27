@@ -1,5 +1,7 @@
 #include "driver.h"
 #include "snake.h"
+#include "image.h"
+#include "music.h"
 
 void game_init() {
     JOY_init();
@@ -278,7 +280,7 @@ uint8_t gameboard_to_hex(uint8_t x, uint8_t y) {
     return 0x00;
 }
 
-void display() { // x horizontal y vertical
+void display(void) { // x horizontal y vertical
     OLED_clear();
     uint8_t y, x;
     for (y = 0; y < 8; y++) {
@@ -290,8 +292,36 @@ void display() { // x horizontal y vertical
     }
 }
 
+void displayStartupAnimation(uint8_t image[]) {
+    uint8_t y, x;
+    for (y = 0; y < 8; y++) {
+        JOY_OLED_data_start(y);
+        for (x = 0; x < 128; x++) {
+            JOY_OLED_send(image[y * 128 + x]);
+        }
+        JOY_OLED_end();
+    }
+}
+
 int main() {
     game_init();
+    OLED_clear();
+    {
+        uint8_t image_data_2[1024];
+        for (int i = 0; i < 1024; i++) {
+            image_data_2[i] = image_data[i];
+        }
+        for (int i = 0; i < 9; i += 4) {
+            for (int j = i; j < i + 6; j++) {
+                displayStartupAnimation(image_data_2);
+                shiftImage((offset_t){j, j % 6 - 3}, image_data, 
+                    image_data_2,(ScreenCoord){128, 64});
+            }
+            negateImage(image_data_2, 1024);
+            playMusic((noterange_t){i % 13, i % 13 + 4});
+        }
+        playMusic((noterange_t){12,13});
+    }
     display();
     while (!JOY_pad_pressed()) {
         rnval ++;
