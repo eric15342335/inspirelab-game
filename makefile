@@ -8,8 +8,8 @@
 # ===================================================================================
 
 # Files and Folders
-MAINFILE = main.c
-TARGET   = main
+MAINFILE = Snake_Game.c
+TARGET   = Snake_Game
 INCLUDE  = include
 
 # Microcontroller Settings
