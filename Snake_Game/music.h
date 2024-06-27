@@ -107,14 +107,6 @@ typedef struct noterange {
     int end; // no need to *2, and is exclusive
 } noterange_t;
 
-typedef struct note {
-    int frequency;
-    float wholenote_count;
-} note_t;
-
-const note_t notes[] = {{400, 0.00}, {500, 0.00}, {400, 0.00}, {400, 0.00}, {400, 0.00},
-    {500, 0.00}, {500, 0.00}, {500, 0.00}, {400, 0.00}, {400, 0.00}};
-
 void playMusic(noterange_t range) {
     // change this to make the song slower or faster
     int tempo = 150;
@@ -157,10 +149,4 @@ void playAllMusic(void) {
     // there are four bytes
     int notes = sizeof(melody) / sizeof(melody[0]) / 2;
     playMusic((noterange_t){0, notes});
-}
-
-void playNotes() {
-    for (uint8_t i = 0; i < sizeof(notes) / sizeof(notes[0]); i++) {
-        JOY_sound(notes[i].frequency, 10);
-    }
 }

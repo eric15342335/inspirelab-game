@@ -74,7 +74,7 @@ void generate_apple() {
 }
 
 void moveSnake(int8_t currentDirection, bool apple) {
-    char newHead, oldHead;
+    char newHead, oldHead = '0';
     switch (currentDirection) {
         case 1:
             newHead = 'H';
@@ -153,18 +153,13 @@ void moveSnake(int8_t currentDirection, bool apple) {
                 break;
         }
     }
-    else {
-        oldHead = '0'; // shut up compiler
-    }
     gameboard[snakeHead] = oldHead;
     snakeHead += currentDirection;
     // head movement
-    if (apple) {
-        return;
-    }
+    if (apple) return;
     // if the snake eats the apple, the tail will not move
-    char newTail;
-    uint8_t newTailPos;
+    char newTail = '0';
+    uint8_t newTailPos = 0;
     if (gameboard[snakeTail] == 't') {
         newTailPos = snakeTail + 1;
         switch (gameboard[newTailPos]) {
@@ -228,10 +223,6 @@ void moveSnake(int8_t currentDirection, bool apple) {
             default:
                 break;
         }
-    }
-    else {
-        newTail = '0';
-        newTailPos = 0; // shut up compiler
     }
     gameboard[snakeTail] = '0';
     gameboard[newTailPos] = newTail;
