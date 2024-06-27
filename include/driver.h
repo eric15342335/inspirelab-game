@@ -124,7 +124,7 @@ void JOY_sound(uint16_t freq, uint16_t dur) {
 }
 
 // Pseudo random number generator
-uint16_t rnval = 0xACE1;
+uint16_t rnval;
 uint16_t JOY_random(void) {
   rnval = (rnval >> 0x01) ^ (-(rnval & 0x01) & 0xB400);
   return rnval;

@@ -281,9 +281,11 @@ void display() { // x horizontal y vertical
 int main() {
     game_init();
     display();
-    int randseed = 0;
     while (!JOY_pad_pressed()) {
-        randseed = randseed;
+        rnval ++;
+        if (rnval > 65530) {
+            rnval = 0;
+        } //boundary check of uint16_t rnval
         DLY_ms(50);
         // wait for the button to be pressed
     }
@@ -311,6 +313,10 @@ int main() {
         display();
         // display the gameboard
         currentDirection = direction(currentDirection);
+        if (apple) {
+            JOY_sound(1000, 100);
+            generate_apple();
+        }
         DLY_ms(100);
         // wait for a while
     }
