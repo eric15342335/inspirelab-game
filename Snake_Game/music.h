@@ -1,6 +1,6 @@
 #pragma once
 // based on https://github.com/robsoncouto/arduino-songs
-
+#include "driver.h"
 // #define DEBUG_SOUND_PRINTF
 
 #define NOTE_B0 31
@@ -121,12 +121,12 @@ void playMusic(noterange_t range) {
     // this calculates the duration of a whole note in ms
     int wholenote = (60000 * 4) / tempo;
 
-    int divider = 0, noteDuration = 0;
+    int divider = 0;
+    int noteDuration = 0;
 
     // iterate over the notes of the melody.
     // Remember, the array is twice the number of notes (notes + durations)
-    for (int thisNote = range.start * 2; thisNote < range.end * 2;
-         thisNote += 2) {
+    for (int thisNote = range.start * 2; thisNote < range.end * 2; thisNote += 2) {
 
         // calculates the duration of each note
         divider = melody[thisNote + 1];
