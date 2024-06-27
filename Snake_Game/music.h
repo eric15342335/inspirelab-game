@@ -95,20 +95,25 @@
 // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
 // !!negative numbers are used to represent dotted notes,
 // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
-int melody[] = {NOTE_E5, 8, NOTE_D5, 8, NOTE_FS4, 4, NOTE_GS4, 4, NOTE_CS5, 8, NOTE_B4,
+const int melody[] = {NOTE_E5, 8, NOTE_D5, 8, NOTE_FS4, 4, NOTE_GS4, 4, NOTE_CS5, 8, NOTE_B4,
     8, NOTE_D4, 4, NOTE_E4, 4, NOTE_B4, 8, NOTE_A4, 8, NOTE_CS4, 4, NOTE_E4, 4, NOTE_A4,
     2};
 
-void intToChars(int num, char * str);
 
-void playMusic();
+typedef struct noterange {
+    int start;
+    int end; // no need to *2, and is exclusive
+} noterange_t;
+
+void playMusic(noterange_t range);
+void playAllMusic(void);
 
 typedef struct note {
     int frequency;
     float wholenote_count;
 } note_t;
 
-note_t notes[] = {{400, 0.00}, {500, 0.00}, {400, 0.00}, {400, 0.00}, {400, 0.00},
+const note_t notes[] = {{400, 0.00}, {500, 0.00}, {400, 0.00}, {400, 0.00}, {400, 0.00},
     {500, 0.00}, {500, 0.00}, {500, 0.00}, {400, 0.00}, {400, 0.00}};
 
 void playNotes();

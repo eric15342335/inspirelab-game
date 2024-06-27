@@ -3,32 +3,16 @@
 #include "driver.h"
 #include "image.c"
 
-// convert int to char[]
-void intToChars(int num, char * str) {
-    int i = 0;
-    while (num > 0) {
-        str[i] = num % 10 + '0';
-        num /= 10;
-        i++;
-    }
-    // reverse the string
-    int start = 0;
-    int end = i - 1;
-    while (start < end) {
-        char temp = str[start];
-        str[start] = str[end];
-        str[end] = temp;
-        start++;
-        end--;
-    }
-    str[i] = '\0';
-}
-
-void playMusic() { // sizeof gives the number of bytes, each int value is
-                   // composed of two bytes (16 bits)
+void playAllMusic(void) {
+    // sizeof gives the number of bytes, each int value is
+    // composed of two bytes (16 bits)
     // there are two values per note (pitch and duration), so for each note
     // there are four bytes
     int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+    playMusic((noterange_t){0, notes});
+}
+
+void playMusic(noterange_t range) {
     // change this to make the song slower or faster
     int tempo = 150;
     // this calculates the duration of a whole note in ms
@@ -38,7 +22,7 @@ void playMusic() { // sizeof gives the number of bytes, each int value is
 
     // iterate over the notes of the melody.
     // Remember, the array is twice the number of notes (notes + durations)
-    for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+    for (int thisNote = range.start*2; thisNote < range.end * 2; thisNote = thisNote + 2) {
 
         // calculates the duration of each note
         divider = melody[thisNote + 1];
@@ -51,14 +35,13 @@ void playMusic() { // sizeof gives the number of bytes, each int value is
             noteDuration = (wholenote) / abs(divider);
             noteDuration *= 1.5; // increases the duration in half for dotted notes
         }
-        char noteChar[5];
-        intToChars(melody[thisNote], noteChar);
-        OLED_print("note=");
-        OLED_print(noteChar);
-        OLED_print(", dur=");
-        char noteDurationChar[5];
-        intToChars(noteDuration, noteDurationChar);
-        OLED_println(noteDurationChar);
+        #if DEBUG == 1
+            OLED_print("note=");
+            OLED_printD(melody[thisNote]);
+            OLED_print(", dur=");
+            OLED_printD(noteDuration);
+            OLED_println("");
+        #endif
         JOY_sound(melody[thisNote], noteDuration);
     }
 }
@@ -70,7 +53,7 @@ void playNotes() {
 }
 
 void display(const uint8_t pixelArray[], uint16_t size) {
-    OLED_fill(0x00);
+    // OLED_fill(0x00);
     uint8_t y, x;
     for (y = 0; y < 8; y++) {
         JOY_OLED_data_start(y);
@@ -110,39 +93,63 @@ void shiftImage(offset_t offsetCoord, const uint8_t oldImage[], uint8_t newImage
         }
     }
 }
+uint8_t image_data_copy[1024];
 
 int main() {
     JOY_init();
     OLED_fill(0x00);
-
     // copy the image data to a new array
-    uint8_t image_data_copy[1024];
     for (int i = 0; i < 1024; i++) {
         image_data_copy[i] = image_data[i];
     }
     display(image_data_copy, 1024);
     DLY_ms(500);
-    for (int i = 0; i < 64; i++) {
+
+    for (int i = 0; i < 13; i += 4) {
+        for (int j = i; j < i + 6; j++) {
+            display(image_data_copy, 1024);
+            shiftImage((offset_t){j, j % 6 - 3}, image_data, image_data_copy,
+                (ScreenCoord){128, 64});
+        }
+        // negateImage(image_data_copy, 1024);
+        // JOY_sound(i * 20 + 200, 15);
+        playMusic((noterange_t){i % 13, i % 13 + 4});
+    }
+    /*for (int i = 0; i < 13*5; i++) {
         display(image_data_copy, 1024);
         shiftImage((offset_t){i, i % 6 - 3}, image_data, image_data_copy,
             (ScreenCoord){128, 64});
         // negateImage(image_data_copy, 1024);
-        JOY_sound(i * 20 + 200, 15);
-    }
+        //JOY_sound(i * 20 + 200, 15);
+    }*/
+    
 
     for (int i = 64; i >= 0; i--) {
         display(image_data_copy, 1024);
         shiftImage((offset_t){-i, i % 6 - 3}, image_data, image_data_copy,
             (ScreenCoord){128, 64});
         // negateImage(image_data_copy, 1024);
-        JOY_sound(i * 20 + 200, 15);
+        //JOY_sound(i * 20 + 200, 15);
     }
     OLED_fill(0x00);
     OLED_println("Press the right button to start the game");
     DLY_ms(1000);
-    // while (!JOY_act_pressed()) {
-    // }
+    rnval = 0xACE1;
+    while (!JOY_act_pressed()) {
+        if (rnval > 0xFFF0) {
+            rnval = 0xACE1;
+        }
+        rnval += 1;
+        DLY_ms(10);
+    }
+    for (int i = 0; i < 100; i++) {
+        OLED_printD(JOY_random());
+        OLED_println("");
+        DLY_ms(1000);
+    }
+    while (!JOY_act_pressed()) {
+    }
     OLED_fill(0x00);
     // start the game
-    playMusic();
+    playAllMusic();
 }
