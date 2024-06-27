@@ -1,5 +1,8 @@
 #pragma once
-// based on https://github.com/robsoncouto/arduino-songs
+/**
+ * @note Based on https://github.com/robsoncouto/arduino-songs
+ */
+
 #include "driver.h"
 // #define DEBUG_SOUND_PRINTF
 
@@ -94,19 +97,61 @@
 #define NOTE_DS8 4978
 #define REST 0
 
-// notes of the moledy followed by the duration.
-// a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
-// !!negative numbers are used to represent dotted notes,
-// so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+/**
+ * @brief Structure representing a range of notes in the melody.
+ */
+typedef struct noterange {
+    int start; /** The starting index of the range (inclusive). */
+    int end;   /** The ending index of the range (exclusive). */
+} noterange_t;
+
+/**
+ * @brief Plays the music within the specified range of notes.
+ * @param range The range of notes to be played.
+ */
+void playMusic(noterange_t range);
+
+/**
+ * @brief Plays all the music in the melody.
+ */
+void playAllMusic(void);
+
+/**
+ * @brief Array representing the melody notes and durations.
+ *
+ * The `melody` array stores the notes of the melody followed by their durations.
+ * Each element in the array represents a note and its duration.
+ * A positive number represents a regular note duration, while a negative number
+ * represents a dotted note duration.
+ *
+ * Note durations are represented as follows:
+ * - 4: quarter note
+ * - 8: eighth note
+ * - 16: sixteenth note
+ *
+ * For example, `NOTE_E5, 8` represents an eighth note of E5.
+ *
+ */
 const int melody[] = {NOTE_E5, 8, NOTE_D5, 8, NOTE_FS4, 4, NOTE_GS4, 4, NOTE_CS5, 8,
     NOTE_B4, 8, NOTE_D4, 4, NOTE_E4, 4, NOTE_B4, 8, NOTE_A4, 8, NOTE_CS4, 4, NOTE_E4, 4,
     NOTE_A4, 2};
 
+/**
+ * @brief Structure representing a range of notes.
+ *
+ * This structure defines a range of notes by specifying the starting and ending note
+ * values. The starting note is inclusive, while the ending note is exclusive.
+ */
 typedef struct noterange {
-    int start;
-    int end; // no need to *2, and is exclusive
+    int start; /** The starting note value. */
+    int end;   /** The ending note value (exclusive). */
 } noterange_t;
 
+/**
+ * Plays a melody based on the given note range.
+ *
+ * @param range The range of notes to play.
+ */
 void playMusic(noterange_t range) {
     // change this to make the song slower or faster
     int tempo = 150;
@@ -142,6 +187,12 @@ void playMusic(noterange_t range) {
     }
 }
 
+/**
+ * @brief Plays all the music in the game.
+ *
+ * This function calculates the number of notes in the 'melody' array and
+ * calls the 'playMusic' function to play all the notes.
+ */
 void playAllMusic(void) {
     // sizeof gives the number of bytes, each int value is
     // composed of two bytes (16 bits)

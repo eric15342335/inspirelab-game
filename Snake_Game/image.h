@@ -76,20 +76,43 @@ const uint8_t image_data[1024] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
+/**
+ * @struct offset
+ * @brief Represents an offset with x and y coordinates.
+ */
 typedef struct offset {
-    int x;
-    int y;
+    int x; /** The x coordinate of the offset. */
+    int y; /** The y coordinate of the offset. */
 } offset_t;
+
+/**
+ * @typedef ScreenCoord
+ * @brief Alias for the offset_t structure.
+ */
 typedef offset_t ScreenCoord;
 
+/**
+ * Negates each pixel in the given pixel array.
+ *
+ * @param pixelArray The array of pixels to be negated.
+ * @param size The size of the pixel array.
+ */
 void negateImage(uint8_t pixelArray[], const uint16_t size) {
     for (uint16_t i = 0; i < size; i++) {
         pixelArray[i] = ~pixelArray[i];
     }
 }
 
-void shiftImage(const offset_t offsetCoord, const uint8_t oldImage[], uint8_t newImage[],
-    const ScreenCoord coords) {
+/**
+ * Shifts an image based on the given offset coordinates.
+ *
+ * @param offsetCoord The offset coordinates to shift the image by.
+ * @param oldImage The original image to be shifted.
+ * @param newImage The shifted image.
+ * @param coords The dimensions of the image.
+ */
+void shiftImage(const offset_t offsetCoord, const uint8_t oldImage[],
+    uint8_t newImage[], const ScreenCoord coords) {
     // Clear the new image
     for (int i = 0; i < coords.x * (coords.y / 8); i++) {
         newImage[i] = 0;
