@@ -44,20 +44,32 @@ bool checkWallAndItself(int8_t currentDirection) {
     }
     // check whether the snake hits the wall
 
-    if (gameboard[snakeHead + currentDirection] != '0' ||
-        gameboard[snakeHead + currentDirection] != 'a') {
-        return false;
-    }
-    else {
-        return true;
-    }
+    return (gameboard[snakeHead + currentDirection] != '0' &&
+            gameboard[snakeHead + currentDirection] != 'a');
     // check whether the snake hits itself
+}
+
+bool checkWin() {
+    for (uint8_t i = 0; i < 128; i++) {
+        if (gameboard[i] == '0' || gameboard[i] == 'a') {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool checkApple(int8_t currentDirection) {
     return gameboard[snakeHead + currentDirection] == 'a';
 }
 // check whether the next step is an apple
+
+void generate_apple() {
+    uint8_t applePos;
+    do {
+        applePos = JOY_random() % 128;
+    } while (gameboard[applePos] != '0');
+    gameboard[applePos] = 'a';
+}
 
 void moveSnake(int8_t currentDirection, bool apple) {
     char newHead, oldHead;
@@ -300,6 +312,7 @@ int main() {
         }
         // get the direction
         if (checkWallAndItself(currentDirection)) {
+            OLED_println("Game Over!");
             break;
         }
         // check if the snake is dead
@@ -319,7 +332,10 @@ int main() {
         }
         DLY_ms(100);
         // wait for a while
+        if (checkWin()){
+            OLED_println("You Win!");
+            break;
+        }
     }
-    OLED_println("Game Over!");
     DLY_ms(2000);
 }
