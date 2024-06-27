@@ -109,13 +109,13 @@ void moveSnake(int8_t currentDirection, bool apple) {
                 break;
         }
     }
-    else if (gameboard[snakeHead] == 'F') {
+    else if (gameboard[snakeHead] == 'f') {
         switch (currentDirection) {
             case 1:
-                oldHead = 'q';
+                oldHead = 'p';
                 break;
             case -1:
-                oldHead = 'b';
+                oldHead = 'q';
                 break;
             case 16:
                 oldHead = '|';
@@ -124,13 +124,13 @@ void moveSnake(int8_t currentDirection, bool apple) {
                 break;
         }
     }
-    else if (gameboard[snakeHead] == 'f') {
+    else if (gameboard[snakeHead] == 'F') {
         switch (currentDirection) {
             case 1:
-                oldHead = 'p';
+                oldHead = 'd';
                 break;
             case -1:
-                oldHead = 'd';
+                oldHead = 'b';
                 break;
             case -16:
                 oldHead = '|';
@@ -173,11 +173,11 @@ void moveSnake(int8_t currentDirection, bool apple) {
             case 'q':
                 newTail = 'T';
                 break;
-            case 'd':
+            case 'p':
                 newTail = 't';
                 break;
             case '|':
-                newTail = 'U';
+                newTail = 'u';
                 break;
             default:
                 break;
@@ -186,14 +186,14 @@ void moveSnake(int8_t currentDirection, bool apple) {
     else if (gameboard[snakeTail] == 'U') {
         newTailPos = snakeTail + 16;
         switch (gameboard[newTailPos]) {
-            case 'p':
-                newTail = 'U';
+            case 'd':
+                newTail = 't';
                 break;
             case 'b':
-                newTail = 'u';
+                newTail = 'T';
                 break;
-            case '-':
-                newTail = 't';
+            case '|':
+                newTail = 'U';
                 break;
             default:
                 break;
@@ -203,13 +203,13 @@ void moveSnake(int8_t currentDirection, bool apple) {
         newTailPos = snakeTail - 1;
         switch (gameboard[newTailPos]) {
             case 'q':
-                newTail = 'T';
+                newTail = 'U';
                 break;
             case 'd':
-                newTail = 't';
+                newTail = 'u';
                 break;
-            case '|':
-                newTail = 'U';
+            case '-':
+                newTail = 'T';
                 break;
             default:
                 break;
@@ -286,8 +286,9 @@ int main() {
         randseed = randseed;
         // wait for the button to be pressed
     }
+    int8_t currentDirection = 1;
+    currentDirection = direction(currentDirection);
     JOY_sound(1000, 100);
-    int8_t currentDirection = 0;
     // start the game
     while (1) {
         for (uint8_t i = 0; i < 3; i++) {
