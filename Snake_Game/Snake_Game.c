@@ -3,7 +3,7 @@
 #include "image.h"
 #include "music.h"
 
-void game_init() {
+void game_init(void) {
     JOY_init();
     for (uint8_t i = 0; i < 128; i++) {
         gameboard[i] = '0';
@@ -15,7 +15,7 @@ void game_init() {
     // reset the gameboard
 }
 
-int8_t direction(int8_t currentDirection) {
+int8_t direction(const int8_t currentDirection) {
     if (JOY_up_pressed() && gameboard[snakeHead] != 'f') {
         return -16;
     }
@@ -32,7 +32,7 @@ int8_t direction(int8_t currentDirection) {
     return currentDirection;
 }
 
-bool checkWallAndItself(int8_t currentDirection) {
+bool checkWallAndItself(const int8_t currentDirection) {
     if (snakeHead + currentDirection < 0 || snakeHead + currentDirection > 127) {
         return true;
     }
@@ -51,7 +51,7 @@ bool checkWallAndItself(int8_t currentDirection) {
     // check whether the snake hits itself
 }
 
-bool checkWin() {
+bool checkWin(void) {
     for (uint8_t i = 0; i < 128; i++) {
         if (gameboard[i] == '0' || gameboard[i] == 'a') {
             return false;
@@ -60,12 +60,12 @@ bool checkWin() {
     return true;
 }
 
-bool checkApple(int8_t currentDirection) {
+bool checkApple(const int8_t currentDirection) {
     return gameboard[snakeHead + currentDirection] == 'a';
 }
 // check whether the next step is an apple
 
-void generate_apple() {
+void generate_apple(void) {
     uint8_t applePos;
     do {
         applePos = JOY_random() % 128;
@@ -73,7 +73,7 @@ void generate_apple() {
     gameboard[applePos] = 'a';
 }
 
-void moveSnake(int8_t currentDirection, bool apple) {
+void moveSnake(const int8_t currentDirection, const bool apple) {
     char newHead, oldHead = '0';
     switch (currentDirection) {
         case 1:
@@ -229,7 +229,7 @@ void moveSnake(int8_t currentDirection, bool apple) {
     snakeTail = newTailPos;
 }
 
-uint8_t gameboard_to_hex(uint8_t x, uint8_t y) {
+uint8_t gameboard_to_hex(const uint8_t x, const uint8_t y) {
     uint8_t gameboard_index = y * 16 + x / 8;
 
     switch (gameboard[gameboard_index]) {
@@ -283,7 +283,7 @@ void display(void) { // x horizontal y vertical
     }
 }
 
-void displayStartupAnimation(uint8_t image[]) {
+void displayStartupAnimation(const uint8_t image[]) {
     uint8_t y, x;
     for (y = 0; y < 8; y++) {
         JOY_OLED_data_start(y);
@@ -294,7 +294,7 @@ void displayStartupAnimation(uint8_t image[]) {
     }
 }
 
-int main() {
+int main(void) {
     game_init();
     OLED_clear();
     {
@@ -302,8 +302,8 @@ int main() {
         for (int i = 0; i < 1024; i++) {
             image_data_2[i] = image_data[i];
         }
-        for (int i = 0; i < 9; i += 4) {
-            for (int j = i; j < i + 6; j++) {
+        for (uint8_t i = 0; i < 9; i += 4) {
+            for (uint8_t j = i; j < i + 6; j++) {
                 displayStartupAnimation(image_data_2);
                 shiftImage((offset_t){j, j % 6 - 3}, image_data, 
                     image_data_2,(ScreenCoord){128, 64});

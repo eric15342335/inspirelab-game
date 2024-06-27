@@ -80,16 +80,16 @@ typedef struct offset {
     int x;
     int y;
 } offset_t;
-
 typedef offset_t ScreenCoord;
-void negateImage(uint8_t pixelArray[], uint16_t size) {
-    for (int i = 0; i < size; i++) {
+
+void negateImage(uint8_t pixelArray[], const uint16_t size) {
+    for (uint16_t i = 0; i < size; i++) {
         pixelArray[i] = ~pixelArray[i];
     }
 }
 
-void shiftImage(offset_t offsetCoord, const uint8_t oldImage[], uint8_t newImage[],
-    ScreenCoord coords) {
+void shiftImage(const offset_t offsetCoord, const uint8_t oldImage[], uint8_t newImage[],
+    const ScreenCoord coords) {
     // Clear the new image
     for (int i = 0; i < coords.x * (coords.y / 8); i++) {
         newImage[i] = 0;
@@ -104,9 +104,9 @@ void shiftImage(offset_t offsetCoord, const uint8_t oldImage[], uint8_t newImage
             // Check if the new coordinates are within bounds
             if (newX >= 0 && newX < coords.x && newY >= 0 && newY < coords.y) {
                 int oldByteIndex = (y / 8) * coords.x + x;
-                int oldBitIndex = y % 8;
+                uint8_t oldBitIndex = y % 8;
                 int newByteIndex = (newY / 8) * coords.x + newX;
-                int newBitIndex = newY % 8;
+                uint8_t newBitIndex = newY % 8;
 
                 // Extract the bit from the old image
                 uint8_t bit = (oldImage[oldByteIndex] >> oldBitIndex) & 1;
