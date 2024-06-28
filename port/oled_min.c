@@ -11,7 +11,7 @@ void OLED_init(void) {
     // Clear the screen
     system("clear");
     // upper border
-    for (int x = 0; x < SCREEN_X+2; x++) {
+    for (int x = 0; x < SCREEN_X + 2; x++) {
         printf("-");
     }
     printf("\n");
@@ -24,11 +24,11 @@ void OLED_init(void) {
             printf((b >> bitIndex) & 1 ? "X" : ".");
         }
         printf("|");
-        
+
         printf("\n");
     }
     // lower border
-    for (int x = 0; x < SCREEN_X+2; x++) {
+    for (int x = 0; x < SCREEN_X + 2; x++) {
         printf("-");
     }
     printf("\n");
@@ -60,5 +60,5 @@ void _OLED_setBuffer(uint8_t data) {
     int byteIndex = cursor.y * SCREEN_X + cursor.x;
     BUFFER[byteIndex] = data;
     cursor.x++;
-    //printf("Set buffer at (%d, %d) to %d\n", cursor.x, cursor.y, data);
+    // printf("Set buffer at (%d, %d) to %d\n", cursor.x, cursor.y, data);
 }
