@@ -293,13 +293,14 @@ uint8_t gameboard_to_hex(const uint8_t x, const uint8_t y) {
     //gives out the hex value of the pixel to be displayed
 }
 
-void display(bool displayimage) { // x horizontal y vertical
+void display(bool image) { //show the image or not
+     // x horizontal y vertical
     uint8_t y, x;
     for (y = 0; y < 8; y++) {
         JOY_OLED_data_start(y);
         for (x = 0; x < 128; x++) {
-            if (displayimage){
-                JOY_OLED_send(image[y * 128 + x]);
+            if (image){
+                JOY_OLED_send(image_data[y * 128 + x]);
             }
             else{
                 JOY_OLED_send(gameboard_to_hex(x, y));
