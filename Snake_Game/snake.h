@@ -1,6 +1,8 @@
 #pragma once
 
 char gameboard[128] = {};
+//create a empty array for storing the snake position
+//[0] - [15] is the top row, [16] - [31] is the second row, etc...
 
 uint8_t snakeHead = 34; //init snake head location
 const uint8_t init_snakeBody = 33; //init snake body location
@@ -8,6 +10,7 @@ uint8_t snakeTail = 32; //init snake tail location
 
 
 //direction will be marked by the following char
+//pixels to be displayed for different images
 const uint8_t rightSnakeHead[8] = { //H
     0x41, 0x41, 0x41, 0x41, 0x55, 0x41, 0x3E, 0x00
 };

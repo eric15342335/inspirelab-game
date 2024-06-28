@@ -17,18 +17,19 @@ void game_init(void) {
 
 int8_t direction(const int8_t currentDirection) {
     if (JOY_up_pressed() && gameboard[snakeHead] != 'f') {
-        return -16;
+        return -16; //go up
     }
     if (JOY_down_pressed() && gameboard[snakeHead] != 'F') {
-        return 16;
+        return 16; //go down
     }
     if (JOY_left_pressed() && gameboard[snakeHead] != 'H') {
-        return -1;
+        return -1; //go left
     }
     if (JOY_right_pressed() && gameboard[snakeHead] != 'h') {
-        return 1;
+        return 1; //go right
     }
     // check if the snake is running to itself
+    //if not then set the direction
     return currentDirection;
 }
 
@@ -36,15 +37,17 @@ bool checkWallAndItself(const int8_t currentDirection) {
     if (snakeHead + currentDirection < 0 || snakeHead + currentDirection > 127) {
         return true;
     }
+    // check whether the snake goes over the top and bottom border
     else if (gameboard[snakeHead] == 'H' && currentDirection == 1 &&
              snakeHead % 16 == 15) {
         return true;
     }
+    //check whether the snake goes over the right border
     else if (gameboard[snakeHead] == 'h' && currentDirection == -1 &&
              snakeHead % 16 == 0) {
         return true;
     }
-    // check whether the snake hits the wall
+    // check whether the snake goes over the left wall
 
     return (gameboard[snakeHead + currentDirection] != '0' &&
             gameboard[snakeHead + currentDirection] != 'a');
@@ -58,6 +61,7 @@ bool checkWin(void) {
         }
     }
     return true;
+    //if there is no empty space, the player wins
 }
 
 bool checkApple(const int8_t currentDirection) {
@@ -71,6 +75,8 @@ void generate_apple(void) {
         applePos = JOY_random() % 128;
     } while (gameboard[applePos] != '0');
     gameboard[applePos] = 'a';
+    //random a location to put down an apple
+    //random till that is a empty space
 }
 
 void moveSnake(const int8_t currentDirection, const bool apple) {
@@ -89,10 +95,12 @@ void moveSnake(const int8_t currentDirection, const bool apple) {
             newHead = 'F';
             break;
         default:
-            newHead = '0'; // shut up compiler
             break;
     }
+    //generate a new head for the snake in the next step
+    //different head for different direction
     gameboard[snakeHead + currentDirection] = newHead;
+    //put down the new head
     if (gameboard[snakeHead] == 'H') {
         switch (currentDirection) {
             case 16:
@@ -153,11 +161,18 @@ void moveSnake(const int8_t currentDirection, const bool apple) {
                 break;
         }
     }
+    //update the old head location to body of snake with different direction
     gameboard[snakeHead] = oldHead;
+    //put down the new snake body into old head location
     snakeHead += currentDirection;
-    // head movement
-    if (apple) return;
+    //update the snake head location
+
+    if (apple){
+        return;
+    }
     // if the snake eats the apple, the tail will not move
+    //code below should be skipped
+   
     char newTail = '0';
     uint8_t newTailPos = 0;
     if (gameboard[snakeTail] == 't') {
@@ -224,14 +239,20 @@ void moveSnake(const int8_t currentDirection, const bool apple) {
                 break;
         }
     }
+    //set the new tail location with different direction
+    //set the tail direction according to the snake posture
+
     gameboard[snakeTail] = '0';
+    //old snake tail should go one block foward, so the original snake tail should be set to empty
+    
     gameboard[newTailPos] = newTail;
     snakeTail = newTailPos;
+    //update new tail location
 }
 
 uint8_t gameboard_to_hex(const uint8_t x, const uint8_t y) {
     uint8_t gameboard_index = y * 16 + x / 8;
-
+    //convert gameboard coordinate to display input array coordinate
     switch (gameboard[gameboard_index]) {
         case '0':
             return 0x00;
@@ -269,10 +290,10 @@ uint8_t gameboard_to_hex(const uint8_t x, const uint8_t y) {
             return 0x00;
     }
     return 0x00;
+    //gives out the hex value of the pixel to be displayed
 }
 
 void display(void) { // x horizontal y vertical
-    OLED_clear();
     uint8_t y, x;
     for (y = 0; y < 8; y++) {
         JOY_OLED_data_start(y);
@@ -281,6 +302,7 @@ void display(void) { // x horizontal y vertical
         }
         JOY_OLED_end();
     }
+    //send HEX values to the display accordingly
 }
 
 void displayStartupAnimation(const uint8_t image[]) {
@@ -319,10 +341,12 @@ int main(void) {
         if (rnval > 65530) {
             rnval = 0;
         } //boundary check of uint16_t rnval
+        //generate a seed according to the time between boot and button pressed
         DLY_ms(50);
         // wait for the button to be pressed
     }
     int8_t currentDirection = 1;
+    //initialize the direction
     currentDirection = direction(currentDirection);
     JOY_sound(1000, 100);
     // start the game
@@ -330,6 +354,7 @@ int main(void) {
         for (uint8_t i = 0; i < 7; i++) {
             currentDirection = direction(currentDirection);
             DLY_ms(50);
+            //update direction every 50ms
         }
         // get the direction
         if (checkWallAndItself(currentDirection)) {
@@ -344,14 +369,14 @@ int main(void) {
         moveSnake(currentDirection, apple);
         // move the snake
         // generate a new apple
-        display();
-        // display the gameboard
-        currentDirection = direction(currentDirection);
         if (apple) {
             JOY_sound(1000, 100);
             generate_apple();
         }
-        DLY_ms(100);
+        currentDirection = direction(currentDirection);
+        display();
+        // display the gameboard
+        DLY_ms(50);
         // wait for a while
         if (checkWin()){
             OLED_println("You Win!");
