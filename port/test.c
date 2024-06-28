@@ -92,6 +92,7 @@ int main(void) {
     JOY_init();
     while (true) {
         display();
+        JOY_sound(400, 1000);
         DLY_ms(1000);
     }
     return 0;
