@@ -17,7 +17,13 @@
 
 #ifdef _WIN32
 #include <windows.h>
-static inline void DLY_ms(int milliseconds) { Sleep(milliseconds); }
+static inline void DLY_ms(int milliseconds) { 
+    Sleep(milliseconds); 
+}
+static inline void JOY_sound(int frequency, int duration_ms) {
+    Beep(frequency, duration_ms);
+}
+
 #else
 #include <time.h>
 void DLY_ms(int milliseconds) {
@@ -26,17 +32,9 @@ void DLY_ms(int milliseconds) {
     ts.tv_nsec = (milliseconds % 1000) * 1000000;
     nanosleep(&ts, NULL);
 }
+static inline void JOY_sound(int frequency, int duration_ms) {
+} //beenping sound is not achievable in macos
+
 #endif
 
 // Platform-specific includes and JOY_sound function
-#ifdef _WIN32
-#include <windows.h>
-
-static inline void JOY_sound(int frequency, int duration_ms) {
-    Beep(frequency, duration_ms);
-}
-#else
-#pragma warning "Unsupported platform for JOY_sound function."
-#endif
-
-#endif // DRIVER_H
