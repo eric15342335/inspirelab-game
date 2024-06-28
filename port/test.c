@@ -88,20 +88,11 @@ void display(void) {
     _OLED_refresh();
 }
 
-// sleep() not in MSVC
-#ifdef _MSC_VER
-#include <windows.h>
-void time_sleep(double s) { Sleep(s * 1000); }
-#else
-#include <unistd.h>
-void time_sleep(unsigned int s) { sleep(s); }
-#endif
-
 int main(void) {
     JOY_init();
     while (true) {
         display();
-        time_sleep(1u);
+        DLY_ms(1000);
     }
     return 0;
 }

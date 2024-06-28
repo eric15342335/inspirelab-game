@@ -2,6 +2,7 @@
 #define DRIVER_H
 
 #include "oled_min.h"
+#include <time.h>
 
 // OLED commands
 #define JOY_init OLED_init
@@ -12,5 +13,22 @@
         OLED_setpos(0, y);                                                             \
         OLED_data_start();                                                             \
     }
+#ifdef _WIN32
+    #include <windows.h>
+    void DLY_ms(int milliseconds) {
+        Sleep(milliseconds);
+    }
+#else
+    #include <time.h>
+    void DLY_ms(int milliseconds) {
+        struct timespec ts;
+        ts.tv_sec = milliseconds / 1000;
+        ts.tv_nsec = (milliseconds % 1000) * 1000000;
+        nanosleep(&ts, NULL);
+    }
+#endif
 
 #endif // DRIVER_H
+
+// Platform-specific includes and sleep functions
+
