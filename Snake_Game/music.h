@@ -137,17 +137,6 @@ const int melody[] = {NOTE_E5, 8, NOTE_D5, 8, NOTE_FS4, 4, NOTE_GS4, 4, NOTE_CS5
     NOTE_A4, 2};
 
 /**
- * @brief Structure representing a range of notes.
- *
- * This structure defines a range of notes by specifying the starting and ending note
- * values. The starting note is inclusive, while the ending note is exclusive.
- */
-typedef struct noterange {
-    int start; /** The starting note value. */
-    int end;   /** The ending note value (exclusive). */
-} noterange_t;
-
-/**
  * Plays a melody based on the given note range.
  *
  * @param range The range of notes to play.
