@@ -293,28 +293,23 @@ uint8_t gameboard_to_hex(const uint8_t x, const uint8_t y) {
     //gives out the hex value of the pixel to be displayed
 }
 
-void display(void) { // x horizontal y vertical
+void display(bool image) { // x horizontal y vertical
     uint8_t y, x;
     for (y = 0; y < 8; y++) {
         JOY_OLED_data_start(y);
         for (x = 0; x < 128; x++) {
-            JOY_OLED_send(gameboard_to_hex(x, y));
+            if (image){
+                JOY_OLED_send(image[y * 128 + x]);
+            }
+            else{
+                JOY_OLED_send(gameboard_to_hex(x, y));
+            }
         }
         JOY_OLED_end();
     }
     //send HEX values to the display accordingly
 }
 
-void displayStartupAnimation(const uint8_t image[]) {
-    uint8_t y, x;
-    for (y = 0; y < 8; y++) {
-        JOY_OLED_data_start(y);
-        for (x = 0; x < 128; x++) {
-            JOY_OLED_send(image[y * 128 + x]);
-        }
-        JOY_OLED_end();
-    }
-}
 
 int main(void) {
     game_init();
@@ -326,7 +321,7 @@ int main(void) {
         }
         for (uint8_t i = 0; i < 9; i += 4) {
             for (uint8_t j = i; j < i + 6; j++) {
-                displayStartupAnimation(image_data_2);
+                display(1);
                 shiftImage((offset_t){j, j % 6 - 3}, image_data, 
                     image_data_2,(ScreenCoord){128, 64});
             }
@@ -335,7 +330,7 @@ int main(void) {
         }
         playMusic((noterange_t){12,13});
     }
-    display();
+    display(0);
     while (!JOY_pad_pressed()) {
         rnval ++;
         if (rnval > 65530) {
@@ -373,8 +368,7 @@ int main(void) {
             JOY_sound(1000, 100);
             generate_apple();
         }
-        currentDirection = direction(currentDirection);
-        display();
+        display(0);
         // display the gameboard
         DLY_ms(50);
         // wait for a while
