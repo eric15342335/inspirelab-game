@@ -132,58 +132,9 @@ void playAllMusic(void);
  * For example, `NOTE_E5, 8` represents an eighth note of E5.
  *
  */
-const int melody[] = {
-  
-  // Greensleeves 
-  // Score available at https://musescore.com/user/168402/scores/1396946
-  // Alexander Trompoukis
-  
-  NOTE_G4,8,//1
-  NOTE_AS4,4, NOTE_C5,8, NOTE_D5,-8, NOTE_DS5,16, NOTE_D5,8,
-  NOTE_C5,4, NOTE_A4,8, NOTE_F4,-8, NOTE_G4,16, NOTE_A4,8,
-  NOTE_AS4,4, NOTE_G4,8, NOTE_G4,-8, NOTE_FS4,16, NOTE_G4,8,
-  NOTE_A4,4, NOTE_FS4,8, NOTE_D4,4, NOTE_G4,8,
-  
-  NOTE_AS4,4, NOTE_C5,8, NOTE_D5,-8, NOTE_DS5,16, NOTE_D5,8,//6
-  NOTE_C5,4, NOTE_A4,8, NOTE_F4,-8, NOTE_G4,16, NOTE_A4,8,
-  NOTE_AS4,-8, NOTE_A4,16, NOTE_G4,8, NOTE_FS4,-8, NOTE_E4,16, NOTE_FS4,8, 
-  NOTE_G4,-2,
-  NOTE_F5,2, NOTE_E5,16, NOTE_D5,8,
-
-  NOTE_C5,4, NOTE_A4,8, NOTE_F4,-8, NOTE_G4,16, NOTE_A4,8,//11
-  NOTE_AS4,4, NOTE_G4,8, NOTE_G4,-8, NOTE_FS4,16, NOTE_G4,8,
-  NOTE_A4,4, NOTE_FS4,8, NOTE_D4,04,
-  NOTE_F5,2, NOTE_E5,16, NOTE_D5,8,
-  NOTE_C5,4, NOTE_A4,8, NOTE_F4,-8, NOTE_G4,16, NOTE_A4,8,
-
-  NOTE_AS4,-8, NOTE_A4,16, NOTE_G4,8, NOTE_FS4,-8, NOTE_E4,16, NOTE_FS4,8,//16
-  NOTE_G4,-2,
-
-  //repeats from the beginning
-
-  NOTE_G4,8,//1
-  NOTE_AS4,4, NOTE_C5,8, NOTE_D5,-8, NOTE_DS5,16, NOTE_D5,8,
-  NOTE_C5,4, NOTE_A4,8, NOTE_F4,-8, NOTE_G4,16, NOTE_A4,8,
-  NOTE_AS4,4, NOTE_G4,8, NOTE_G4,-8, NOTE_FS4,16, NOTE_G4,8,
-  NOTE_A4,4, NOTE_FS4,8, NOTE_D4,4, NOTE_G4,8,
-  
-  NOTE_AS4,4, NOTE_C5,8, NOTE_D5,-8, NOTE_DS5,16, NOTE_D5,8,//6
-  NOTE_C5,4, NOTE_A4,8, NOTE_F4,-8, NOTE_G4,16, NOTE_A4,8,
-  NOTE_AS4,-8, NOTE_A4,16, NOTE_G4,8, NOTE_FS4,-8, NOTE_E4,16, NOTE_FS4,8, 
-  NOTE_G4,-2,
-  NOTE_F5,2, NOTE_E5,16, NOTE_D5,8,
-
-  NOTE_C5,4, NOTE_A4,8, NOTE_F4,-8, NOTE_G4,16, NOTE_A4,8,//11
-  NOTE_AS4,4, NOTE_G4,8, NOTE_G4,-8, NOTE_FS4,16, NOTE_G4,8,
-  NOTE_A4,4, NOTE_FS4,8, NOTE_D4,04,
-  NOTE_F5,2, NOTE_E5,16, NOTE_D5,8,
-  NOTE_C5,4, NOTE_A4,8, NOTE_F4,-8, NOTE_G4,16, NOTE_A4,8,
-
-  NOTE_AS4,-8, NOTE_A4,16, NOTE_G4,8, NOTE_FS4,-8, NOTE_E4,16, NOTE_FS4,8,//16
-  NOTE_G4,-2
-  
-  
-};
+const int melody[] = {NOTE_E5, 8, NOTE_D5, 8, NOTE_FS4, 4, NOTE_GS4, 4, NOTE_CS5, 8,
+    NOTE_B4, 8, NOTE_D4, 4, NOTE_E4, 4, NOTE_B4, 8, NOTE_A4, 8, NOTE_CS4, 4, NOTE_E4, 4,
+    NOTE_A4, 2};
 
 /**
  * Plays a melody based on the given note range.
@@ -192,7 +143,7 @@ const int melody[] = {
  */
 void playMusic(noterange_t range) {
     // change this to make the song slower or faster
-    int tempo = 50;
+    int tempo = 150;
     // this calculates the duration of a whole note in ms
     int wholenote = (60000 * 4) / tempo;
 

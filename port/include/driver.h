@@ -3,8 +3,8 @@
 
 #include "oled_min.h"
 
-#include <time.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 // OLED commands
 #define JOY_init OLED_init
@@ -24,6 +24,10 @@
 #define JOY_pad_pressed (is_key_pressed('w') || is_key_pressed('s') || is_key_pressed('a') || is_key_pressed('d'))
 #define JOY_pad_released (!is_key_pressed('w') && !is_key_pressed('s') && !is_key_pressed('a') && !is_key_pressed('d'))
 #define JOY_all_released (JOY_act_released && !JOY_pad_released)
+
+#define JOY_random rand()
+#define JOY_setseed srand()
+#define JOY_setseed_default srand(0x1234)
 
 #ifdef _WIN32
 #include <windows.h>
@@ -47,8 +51,8 @@ void DLY_ms(int milliseconds) {
     usleep(milliseconds * 1000);
 }
 static inline void JOY_sound(int frequency, int duration_ms) {
-    frequency;
-    duration_ms;
+    frequency++;
+    duration_ms++;
 } //beenping sound is not achievable in macos
 
 bool is_key_pressed_unix(char smallkey) { //unix version requires small letters

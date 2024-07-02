@@ -130,6 +130,15 @@ uint16_t JOY_random(void) {
   return rnval;
 }
 
+void JOY_setseed_default(void){
+  rnval = 0x1234;
+}
+
+void JOY_setseed(uint16_t seed){
+  rnval = seed;
+  return rnval;
+}
+
 // Delays
 #define JOY_DLY_ms    DLY_ms
 #define JOY_DLY_us    DLY_us
