@@ -4,7 +4,7 @@ CFLAGS = -flto -O3 -Wall -Wextra -pedantic -Wshadow -Wconversion -Wundef -Wswitc
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 
-.PHONY: all clean
+.PHONY: all clean msvc
 
 all: test
 
@@ -13,6 +13,9 @@ test: $(OBJS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+msvc:
+	cl oled_min.c test.c -MP -O1 -Oy- -MD -GL -D_HAS_EXCEPTIONS=0 -GR-
 
 clean:
 	rm -f $(OBJS) test
