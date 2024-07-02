@@ -37,4 +37,6 @@ static inline void JOY_sound(int frequency, int duration_ms) {
 
 #endif
 
+#endif
+
 // Platform-specific includes and JOY_sound function
