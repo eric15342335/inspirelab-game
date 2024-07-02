@@ -9,7 +9,7 @@ uint8_t BUFFER[BUFFER_SIZE];
 
 void OLED_init(void) {
     // Clear the screen
-    system("clear");
+    printf("\033[2J\033[H");
     // upper border
     for (int x = 0; x < SCREEN_X + 2; x++) {
         printf("-");
@@ -21,7 +21,7 @@ void OLED_init(void) {
             int byteIndex = (y / 8) * SCREEN_X + x;
             int bitIndex = y % 8;
             int b = BUFFER[byteIndex];
-            printf((b >> bitIndex) & 1 ? "X" : ".");
+            printf((b >> bitIndex) & 1 ? " " : "■");
         }
         printf("|");
 
