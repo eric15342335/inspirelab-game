@@ -1,0 +1,75 @@
+#ifndef DRIVER_H
+#define DRIVER_H
+
+#include "oled_min.h"
+
+#include <time.h>
+#include <stdbool.h>
+
+// OLED commands
+#define JOY_init OLED_init
+#define JOY_OLED_end _OLED_doNothing
+#define JOY_OLED_send(b) _OLED_setBuffer(b)
+#define JOY_OLED_data_start(y)                                                         \
+    {                                                                                  \
+        OLED_setpos(0, y);                                                             \
+        OLED_data_start();                                                             \
+    }
+#define JOY_act_pressed is_key_pressed('f')
+#define JOY_act_released !is_key_pressed('f')
+#define JOY_up_pressed is_key_pressed('w')
+#define JOY_down_pressed is_key_pressed('s')
+#define JOY_left_pressed is_key_pressed('a')
+#define JOY_right_pressed is_key_pressed('d')
+#define JOY_pad_pressed (is_key_pressed('w') || is_key_pressed('s') || is_key_pressed('a') || is_key_pressed('d'))
+#define JOY_pad_released (!is_key_pressed('w') && !is_key_pressed('s') && !is_key_pressed('a') && !is_key_pressed('d'))
+#define JOY_all_released (JOY_act_released && !JOY_pad_released)
+
+#ifdef _WIN32
+#include <windows.h>
+static inline void DLY_ms(int milliseconds) { 
+    Sleep(milliseconds); 
+}
+static inline void JOY_sound(int frequency, int duration_ms) {
+    Beep(frequency, duration_ms);
+}
+bool is_key_pressed(char smallkey) {
+    char capitalkey = smallkey - 32;
+    SHORT result = GetAsyncKeyState((int)capitalkey); //windows.h requires capital letters
+    return (result & 0x8000) != 0;
+}
+
+#else
+#include <ncurses.h>
+#include <unistd.h>
+
+void DLY_ms(int milliseconds) {
+    usleep(milliseconds * 1000);
+}
+static inline void JOY_sound(int frequency, int duration_ms) {
+    frequency;
+    duration_ms;
+} //beenping sound is not achievable in macos
+
+bool is_key_pressed_unix(char smallkey) { //unix version requires small letters
+    
+    initscr(); // Initialize the ncurses screen
+    raw(); // Line buffering disabled
+    keypad(stdscr, TRUE); // Enable function keys
+    noecho(); // Don't echo while we do getch
+    int ch;
+
+    timeout(0); // Non-blocking getch
+    while ((ch = getch()) != ERR) {
+        if (ch == smallkey) {
+            endwin(); // End the ncurses mode
+            return true;
+        }
+    }
+    endwin(); // End the ncurses mode
+    return false;
+} //need to add -lncurses to the compile command
+
+#endif
+
+#endif

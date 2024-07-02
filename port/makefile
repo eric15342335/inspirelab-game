@@ -1,21 +1,40 @@
+# Compiler
 CC = gcc
-CFLAGS = -flto -O3 -Wall -Wextra -pedantic -Wshadow -Wconversion -Wundef -Wswitch -g
 
-SRCS = $(wildcard *.c)
+# Compiler flags
+CFLAGS = -Iinclude -Wall -Wextra -Werror
+
+# Libraries
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S), Linux)
+    LDFLAGS = -lncurses
+else ifeq ($(UNAME_S), Darwin)
+    LDFLAGS = -lncurses
+else
+    LDFLAGS =
+endif
+
+# Source and object files
+SRCS = Snake_Game.c
 OBJS = $(SRCS:.c=.o)
 
-.PHONY: all clean msvc
+# Output binary
+TARGET = myprogram
 
-all: test
+# Default target
+all: $(TARGET)
 
-test: $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+# Linking
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) $(LDFLAGS) -o $(TARGET)
 
+# Compiling
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-msvc:
-	cl oled_min.c test.c -MP -O1 -Oy- -MD -GL -D_HAS_EXCEPTIONS=0 -GR-
-
+# Clean up
 clean:
-	rm -f $(OBJS) test
+	rm -f $(OBJS) $(TARGET)
+
+# Phony targets
+.PHONY: all clean
