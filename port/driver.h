@@ -25,12 +25,9 @@ static inline void JOY_sound(int frequency, int duration_ms) {
 }
 
 #else
-#include <time.h>
+#include <unistd.h>
 void DLY_ms(int milliseconds) {
-    struct timespec ts;
-    ts.tv_sec = milliseconds / 1000;
-    ts.tv_nsec = (milliseconds % 1000) * 1000000;
-    nanosleep(&ts, NULL);
+    usleep(milliseconds * 1000);
 }
 static inline void JOY_sound(int frequency, int duration_ms) {
 } //beenping sound is not achievable in macos
@@ -38,5 +35,3 @@ static inline void JOY_sound(int frequency, int duration_ms) {
 #endif
 
 #endif
-
-// Platform-specific includes and JOY_sound function
