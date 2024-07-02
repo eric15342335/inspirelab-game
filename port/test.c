@@ -88,12 +88,37 @@ void display(void) {
     _OLED_refresh();
 }
 
+#include "music.h"
+
+#ifdef _WIN32
+#define NOMINMAX 1          // Prevent Windows.h from defining min and max macros
+#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
+#include <windows.h>
+/** @brief Enable Windows VT processing for ANSI escape codes
+ * @details Without this, ANSI escape codes will not work on Windows 10.
+ * E.g. text color, cursor position, etc.
+ */
+void enableWindowsVTProcessing(void) {
+    // Set the console to UTF-8 mode
+    SetConsoleOutputCP(65001);
+    // Get the current console mode
+    DWORD consoleMode;
+    GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &consoleMode);
+    // Enable virtual terminal processing
+    consoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), consoleMode);
+}
+#else
+#define enableWindowsVTProcessing() // Do nothing
+#endif
+
 int main(void) {
+    enableWindowsVTProcessing();
     JOY_init();
     while (true) {
         display();
-        JOY_sound(400, 1000);
-        DLY_ms(1000);
+        playAllMusic();
+        //DLY_ms(1000);
     }
     return 0;
 }
