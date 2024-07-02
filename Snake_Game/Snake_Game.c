@@ -294,7 +294,7 @@ uint8_t gameboard_to_hex(const uint8_t x, const uint8_t y) {
 }
 
 void display(bool image) { //show the image or not
-     // x horizontal y vertical
+    // x horizontal y vertical
     uint8_t y, x;
     for (y = 0; y < 8; y++) {
         JOY_OLED_data_start(y);
