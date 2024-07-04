@@ -23,7 +23,7 @@ endif
 OBJS = $(SRCS:.c=.o)
 
 # Output binary
-TARGET = myprogram
+TARGET = Snake_Game
 
 # Default target
 all: $(TARGET)
