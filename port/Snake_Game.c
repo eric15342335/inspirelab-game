@@ -290,8 +290,6 @@ uint8_t gameboard_to_hex(const uint8_t x, const uint8_t y) {
         default:
             return 0x00;
     }
-    return 0x00;
-    // gives out the hex value of the pixel to be displayed
 }
 
 void display(void) {

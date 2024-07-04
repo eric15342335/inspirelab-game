@@ -1,3 +1,5 @@
+# cl -MD -GL -D_HAS_EXCEPTIONS=0 -GR- -O1 -Oy- -W4 -sdl -Iinclude include/oled_min.c Snake_Game.c user32.lib -Fe:snakegame.exe
+
 # Compiler
 CC = gcc
 
