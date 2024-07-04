@@ -80,7 +80,7 @@ void generate_apple(void) {
 }
 
 void moveSnake(const int8_t currentDirection, const bool apple) {
-    char newHead, oldHead = '0';
+    char newHead = '0', oldHead = '0';
     switch (currentDirection) {
         case 1:
             newHead = 'H';

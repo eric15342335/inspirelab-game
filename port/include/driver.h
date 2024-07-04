@@ -26,7 +26,7 @@
 #define JOY_all_released() (JOY_act_released && !JOY_pad_released)
 
 #define JOY_random() rand()
-#define JOY_setseed() srand()
+#define JOY_setseed(seed) srand(seed)
 #define JOY_setseed_default() srand(0x1234)
 
 #ifdef _WIN32
