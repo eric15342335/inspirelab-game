@@ -17,6 +17,9 @@ endif
 # Source and object files
 SRCS = Snake_Game.c
 SRCS += $(wildcard include/*.c)
+ifneq ($(UNAME_S), Darwin)
+SRCS := $(filter-out include/system_mac.c, $(SRCS))
+endif
 OBJS = $(SRCS:.c=.o)
 
 # Output binary

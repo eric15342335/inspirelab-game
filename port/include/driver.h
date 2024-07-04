@@ -14,6 +14,32 @@
         OLED_setpos(0, y);                                                             \
         OLED_data_start();                                                             \
     }
+
+
+#ifdef _WIN32
+#include <windows.h>
+#define DLY_ms(milliseconds) Sleep(milliseconds)
+#define JOY_sound(freq, dur) Beep(freq, dur)
+
+static inline bool is_key_pressed(char smallkey) {
+    char capitalkey = smallkey - 32;
+    SHORT result =
+        GetAsyncKeyState((int)capitalkey); // windows.h requires capital letters
+    return (result & 0x8000) != 0;
+}
+
+#else
+#include "system_mac.h"
+#include <unistd.h>
+
+#define JOY_sound(freq, dur) _beep(freq, dur)
+
+static inline void DLY_ms(int milliseconds) {
+    usleep(milliseconds * 1000);
+}
+
+#endif
+
 #define JOY_act_pressed() is_key_pressed('f')
 #define JOY_act_released() !is_key_pressed('f')
 #define JOY_up_pressed() is_key_pressed('w')
@@ -31,27 +57,3 @@
 #define JOY_random() rand()
 #define JOY_setseed(seed) srand(seed)
 #define JOY_setseed_default() srand(0x1234)
-
-#ifdef _WIN32
-#include <windows.h>
-#define DLY_ms(int milliseconds) Sleep(milliseconds)
-#define JOY_sound(freq, dur) Beep(freq, dur)
-
-bool is_key_pressed(char smallkey) {
-    char capitalkey = smallkey - 32;
-    SHORT result =
-        GetAsyncKeyState((int)capitalkey); // windows.h requires capital letters
-    return (result & 0x8000) != 0;
-}
-
-#else
-#include "system_mac.h"
-#include <unistd.h>
-
-#define JOY_sound(freq, dur) _beep(freq, dur)
-
-void DLY_ms(int milliseconds) {
-    usleep(milliseconds * 1000);
-}
-
-#endif
