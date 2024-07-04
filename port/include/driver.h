@@ -34,11 +34,6 @@
 
 #ifdef _WIN32
 #include <windows.h>
-static inline void DLY_ms(int milliseconds) { Sleep(milliseconds); }
-static inline void JOY_sound(int frequency, int duration_ms) {
-    Beep(frequency, duration_ms);
-}
-static inline bool is_key_pressed(char smallkey) {
 #define DLY_ms(int milliseconds) Sleep(milliseconds)
 #define JOY_sound(freq, dur) Beep(freq, dur)
 
@@ -55,32 +50,8 @@ bool is_key_pressed(char smallkey) {
 
 #define JOY_sound(freq, dur) beep(freq, dur)
 
-void DLY_ms(int milliseconds) { usleep(milliseconds * 1000); }
-static inline void JOY_sound(int frequency, int duration_ms) {
-    (void)frequency;
-    (void)duration_ms;
-} // beenping sound is not achievable in macos
-
-bool is_key_pressed(char smallkey) { // unix version requires small letters
-
-    initscr();            // Initialize the ncurses screen
-    raw();                // Line buffering disabled
-    keypad(stdscr, TRUE); // Enable function keys
-    noecho();             // Don't echo while we do getch
-    int ch;
-
-    timeout(0); // Non-blocking getch
-    while ((ch = getch()) != ERR) {
-        if (ch == smallkey) {
-            endwin(); // End the ncurses mode
-            return true;
-        }
-    }
-    endwin(); // End the ncurses mode
-    return false;
-} // need to add -lncurses to the compile command
-
 void DLY_ms(int milliseconds) {
     usleep(milliseconds * 1000);
 }
+
 #endif
