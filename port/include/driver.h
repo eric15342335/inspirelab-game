@@ -15,19 +15,19 @@
         OLED_setpos(0, y);                                                             \
         OLED_data_start();                                                             \
     }
-#define JOY_act_pressed is_key_pressed('f')
-#define JOY_act_released !is_key_pressed('f')
-#define JOY_up_pressed is_key_pressed('w')
-#define JOY_down_pressed is_key_pressed('s')
-#define JOY_left_pressed is_key_pressed('a')
-#define JOY_right_pressed is_key_pressed('d')
-#define JOY_pad_pressed (is_key_pressed('w') || is_key_pressed('s') || is_key_pressed('a') || is_key_pressed('d'))
-#define JOY_pad_released (!is_key_pressed('w') && !is_key_pressed('s') && !is_key_pressed('a') && !is_key_pressed('d'))
-#define JOY_all_released (JOY_act_released && !JOY_pad_released)
+#define JOY_act_pressed() is_key_pressed('f')
+#define JOY_act_released() !is_key_pressed('f')
+#define JOY_up_pressed() is_key_pressed('w')
+#define JOY_down_pressed() is_key_pressed('s')
+#define JOY_left_pressed() is_key_pressed('a')
+#define JOY_right_pressed() is_key_pressed('d')
+#define JOY_pad_pressed() (is_key_pressed('w') || is_key_pressed('s') || is_key_pressed('a') || is_key_pressed('d'))
+#define JOY_pad_released() (!is_key_pressed('w') && !is_key_pressed('s') && !is_key_pressed('a') && !is_key_pressed('d'))
+#define JOY_all_released() (JOY_act_released && !JOY_pad_released)
 
-#define JOY_random rand()
-#define JOY_setseed srand()
-#define JOY_setseed_default srand(0x1234)
+#define JOY_random() rand()
+#define JOY_setseed() srand()
+#define JOY_setseed_default() srand(0x1234)
 
 #ifdef _WIN32
 #include <windows.h>
@@ -51,11 +51,11 @@ void DLY_ms(int milliseconds) {
     usleep(milliseconds * 1000);
 }
 static inline void JOY_sound(int frequency, int duration_ms) {
-    frequency++;
-    duration_ms++;
+    (void)frequency;
+    (void)duration_ms;
 } //beenping sound is not achievable in macos
 
-bool is_key_pressed_unix(char smallkey) { //unix version requires small letters
+bool is_key_pressed(char smallkey) { //unix version requires small letters
     
     initscr(); // Initialize the ncurses screen
     raw(); // Line buffering disabled

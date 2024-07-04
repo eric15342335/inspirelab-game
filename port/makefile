@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Iinclude -Wall -Wextra -Werror
+CFLAGS = -Iinclude -Wall -Wextra -Werror -O1
 
 # Libraries
 UNAME_S := $(shell uname -s)
