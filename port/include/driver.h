@@ -48,7 +48,7 @@ bool is_key_pressed(char smallkey) {
 #include "system_mac.h"
 #include <unistd.h>
 
-#define JOY_sound(freq, dur) beep(freq, dur)
+#define JOY_sound(freq, dur) _beep(freq, dur)
 
 void DLY_ms(int milliseconds) {
     usleep(milliseconds * 1000);

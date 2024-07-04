@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-void beep(int frequency, int duration);
+void _beep(int frequency, int duration);
 bool is_key_pressed(char smallkey);
 
 #endif

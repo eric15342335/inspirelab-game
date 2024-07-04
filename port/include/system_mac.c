@@ -26,7 +26,7 @@ void AudioCallback(void *userData, AudioQueueRef queue, AudioQueueBufferRef buff
     AudioQueueEnqueueBuffer(queue, buffer, 0, NULL);
 }
 
-void beep(int frequency, int duration) {
+void _beep(int frequency, int duration) {
     // Audio format
     AudioStreamBasicDescription format;
     format.mSampleRate = 44100;

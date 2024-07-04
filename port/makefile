@@ -7,9 +7,9 @@ CFLAGS = -Iinclude -Wall -Wextra -Werror -g
 # Libraries
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Linux)
-    LDFLAGS = -lncurses
+    LDFLAGS = -lncurses -framework AudioToolbox -framework CoreFoundation
 else ifeq ($(UNAME_S), Darwin)
-    LDFLAGS = -lncurses
+    LDFLAGS = -lncurses -framework AudioToolbox -framework CoreFoundation
 else
     LDFLAGS =
 endif
