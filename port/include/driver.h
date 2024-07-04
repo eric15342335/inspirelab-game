@@ -1,5 +1,4 @@
-#ifndef DRIVER_H
-#define DRIVER_H
+#pragma once
 
 #include "oled_min.h"
 
@@ -21,8 +20,12 @@
 #define JOY_down_pressed() is_key_pressed('s')
 #define JOY_left_pressed() is_key_pressed('a')
 #define JOY_right_pressed() is_key_pressed('d')
-#define JOY_pad_pressed() (is_key_pressed('w') || is_key_pressed('s') || is_key_pressed('a') || is_key_pressed('d'))
-#define JOY_pad_released() (!is_key_pressed('w') && !is_key_pressed('s') && !is_key_pressed('a') && !is_key_pressed('d'))
+#define JOY_pad_pressed()                                                              \
+    (is_key_pressed('w') || is_key_pressed('s') || is_key_pressed('a') ||              \
+        is_key_pressed('d'))
+#define JOY_pad_released()                                                             \
+    (!is_key_pressed('w') && !is_key_pressed('s') && !is_key_pressed('a') &&           \
+        !is_key_pressed('d'))
 #define JOY_all_released() (JOY_act_released && !JOY_pad_released)
 
 #define JOY_random() rand()
@@ -31,15 +34,14 @@
 
 #ifdef _WIN32
 #include <windows.h>
-static inline void DLY_ms(int milliseconds) { 
-    Sleep(milliseconds); 
-}
+static inline void DLY_ms(int milliseconds) { Sleep(milliseconds); }
 static inline void JOY_sound(int frequency, int duration_ms) {
     Beep(frequency, duration_ms);
 }
-bool is_key_pressed(char smallkey) {
+static inline bool is_key_pressed(char smallkey) {
     char capitalkey = smallkey - 32;
-    SHORT result = GetAsyncKeyState((int)capitalkey); //windows.h requires capital letters
+    SHORT result =
+        GetAsyncKeyState((int)capitalkey); // windows.h requires capital letters
     return (result & 0x8000) != 0;
 }
 
@@ -47,20 +49,18 @@ bool is_key_pressed(char smallkey) {
 #include <ncurses.h>
 #include <unistd.h>
 
-void DLY_ms(int milliseconds) {
-    usleep(milliseconds * 1000);
-}
+void DLY_ms(int milliseconds) { usleep(milliseconds * 1000); }
 static inline void JOY_sound(int frequency, int duration_ms) {
     (void)frequency;
     (void)duration_ms;
-} //beenping sound is not achievable in macos
+} // beenping sound is not achievable in macos
 
-bool is_key_pressed(char smallkey) { //unix version requires small letters
-    
-    initscr(); // Initialize the ncurses screen
-    raw(); // Line buffering disabled
+bool is_key_pressed(char smallkey) { // unix version requires small letters
+
+    initscr();            // Initialize the ncurses screen
+    raw();                // Line buffering disabled
     keypad(stdscr, TRUE); // Enable function keys
-    noecho(); // Don't echo while we do getch
+    noecho();             // Don't echo while we do getch
     int ch;
 
     timeout(0); // Non-blocking getch
@@ -72,8 +72,6 @@ bool is_key_pressed(char smallkey) { //unix version requires small letters
     }
     endwin(); // End the ncurses mode
     return false;
-} //need to add -lncurses to the compile command
-
-#endif
+} // need to add -lncurses to the compile command
 
 #endif

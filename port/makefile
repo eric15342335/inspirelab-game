@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Iinclude -Wall -Wextra -Werror -O1
+CFLAGS = -Iinclude -Wall -Wextra -Werror -g
 
 # Libraries
 UNAME_S := $(shell uname -s)
@@ -16,6 +16,7 @@ endif
 
 # Source and object files
 SRCS = Snake_Game.c
+SRCS += $(wildcard include/*.c)
 OBJS = $(SRCS:.c=.o)
 
 # Output binary
