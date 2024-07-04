@@ -88,7 +88,6 @@ class ButtonGrid(QWidget):
 
         self.grid_layout.setSpacing(0)
 
-        button_size = 20  # Adjust button size here
         for y in range(self.height):
             for x in range(self.width):
                 button = QPushButton()
