@@ -4,7 +4,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Iinclude -Wall -Wextra -Werror -g
+CFLAGS = -Iinclude -Wall -Wextra -Werror -s -flto -O3
 
 # Libraries
 UNAME_S := $(shell uname -s)
@@ -20,7 +20,7 @@ endif
 SRCS = Snake_Game.c
 SRCS += $(wildcard include/*.c)
 ifneq ($(UNAME_S), Darwin)
-SRCS := $(filter-out include/system_mac.c, $(SRCS))
+SRCS := $(filter-out include/system_mac.c,$(SRCS))
 endif
 OBJS = $(SRCS:.c=.o)
 

@@ -9,6 +9,8 @@ typedef struct coord {
     uint8_t y; // < SCREEN_Y
 } coord_t;
 
+extern coord_t cursor;
+
 #define SCREEN_X 128
 #define SCREEN_Y 64
 #define AXIS_Y_STORAGE 8
@@ -71,5 +73,4 @@ static const uint8_t OLED_FONT[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x
 
 void _OLED_setBuffer(uint8_t data);
 void _OLED_doNothing(void);
-
-#define _OLED_refresh() OLED_init()
+void _OLED_refresh_display(void);

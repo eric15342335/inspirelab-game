@@ -136,7 +136,6 @@ void JOY_setseed_default(void){
 
 void JOY_setseed(uint16_t seed){
   rnval = seed;
-  return rnval;
 }
 
 // Delays

@@ -8,30 +8,7 @@ coord_t cursor = {.x = 0, .y = 0};
 uint8_t BUFFER[BUFFER_SIZE];
 
 void OLED_init(void) {
-    // Clear the screen
-    printf("\033[2J\033[H");
-    // upper border
-    for (int x = 0; x < SCREEN_X + 2; x++) {
-        printf("-");
-    }
-    printf("\n");
-    for (int y = 0; y < SCREEN_Y; y++) {
-        printf("|");
-        for (int x = 0; x < SCREEN_X; x++) {
-            int byteIndex = (y / 8) * SCREEN_X + x;
-            int bitIndex = y % 8;
-            int b = BUFFER[byteIndex];
-            printf((b >> bitIndex) & 1 ? "." : "X");
-        }
-        printf("|");
-
-        printf("\n");
-    }
-    // lower border
-    for (int x = 0; x < SCREEN_X + 2; x++) {
-        printf("-");
-    }
-    printf("\n");
+    _OLED_refresh_display();
     return;
 }
 
@@ -62,7 +39,6 @@ void OLED_clear(void) {
     }
     cursor.x = 0;
     cursor.y = 0;
-    OLED_init();
 }
 
 // OLED global variables
@@ -70,12 +46,13 @@ uint8_t line, column, scroll;
 
 // OLED plot a single character
 void OLED_plotChar(char c) {
-    uint8_t i;
     uint16_t ptr = c - 32; // character pointer
     ptr += ptr << 2;       // -> ptr = (ch - 32) * 5;
     OLED_data_start();
-    for (i = 5; i; i--)
+    for (uint8_t i = 5; i; i--) {
+        // printf("Set buffer at (%d, %d) to %d\n", cursor.x, cursor.y, OLED_FONT[ptr]);
         I2C_write(OLED_FONT[ptr++]);
+    }
     I2C_write(0x00); // write space between characters
     JOY_OLED_end();
 }
@@ -115,6 +92,7 @@ void OLED_write(char c) {
 void OLED_print(char * str) {
     while (*str)
         OLED_write(*str++);
+    _OLED_refresh_display();
 }
 
 // OLED print string with newline
@@ -145,5 +123,32 @@ void _OLED_setBuffer(uint8_t data) {
     int byteIndex = cursor.y * SCREEN_X + cursor.x;
     BUFFER[byteIndex] = data;
     cursor.x++;
-    // printf("Set buffer at (%d, %d) to %d\n", cursor.x, cursor.y, data);
+    //printf("Set buffer at (%d, %d) to %d\n", cursor.x, cursor.y, data);
+}
+
+void _OLED_refresh_display() {
+    // Clear the screen
+    printf("\033[2J\033[H");
+    // upper border
+    for (int x = 0; x < SCREEN_X + 2; x++) {
+        printf("-");
+    }
+    printf("\n");
+    for (int y = 0; y < SCREEN_Y; y++) {
+        printf("|");
+        for (int x = 0; x < SCREEN_X; x++) {
+            int byteIndex = (y / 8) * SCREEN_X + x;
+            int bitIndex = y % 8;
+            int b = BUFFER[byteIndex];
+            printf((b >> bitIndex) & 1 ? "." : "X");
+        }
+        printf("|");
+
+        printf("\n");
+    }
+    // lower border
+    for (int x = 0; x < SCREEN_X + 2; x++) {
+        printf("-");
+    }
+    printf("\n");
 }
