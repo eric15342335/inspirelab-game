@@ -21,7 +21,7 @@
 #define DLY_ms(milliseconds) Sleep(milliseconds)
 #define JOY_sound(freq, dur) Beep(freq, dur)
 
-static inline bool is_key_pressed(char smallkey) {
+inline bool is_key_pressed(char smallkey) {
     char capitalkey = smallkey - 32;
     SHORT result =
         GetAsyncKeyState((int)capitalkey); // windows.h requires capital letters
@@ -34,7 +34,7 @@ static inline bool is_key_pressed(char smallkey) {
 
 #define JOY_sound(freq, dur) _beep(freq, dur)
 
-static inline void DLY_ms(int milliseconds) {
+inline void DLY_ms(int milliseconds) {
     usleep(milliseconds * 1000);
 }
 #endif
