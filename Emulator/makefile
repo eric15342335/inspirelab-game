@@ -4,7 +4,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Iinclude -Wall -Wextra -Werror -s -flto -O3
+CFLAGS = -Iinclude -Wall -Wextra -flto -O3
 
 # Libraries
 UNAME_S := $(shell uname -s)
