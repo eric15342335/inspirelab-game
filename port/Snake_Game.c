@@ -320,7 +320,7 @@ void displayData(uint8_t _image_data[]) {
 int main(void) {
     game_init();
     OLED_clear();
-    /*{
+    {
         uint8_t image_data_2[1024];
         for (int i = 0; i < 1024; i++) {
             image_data_2[i] = image_data[i];
@@ -336,7 +336,7 @@ int main(void) {
         }
         playMusic((noterange_t){12, 13});
     }
-    */
+    
     OLED_println("Press any key to start");
     _OLED_refresh_display();
     display();

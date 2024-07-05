@@ -37,7 +37,6 @@ static inline bool is_key_pressed(char smallkey) {
 static inline void DLY_ms(int milliseconds) {
     usleep(milliseconds * 1000);
 }
-
 #endif
 
 #define JOY_act_pressed() is_key_pressed('f')

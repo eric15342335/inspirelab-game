@@ -63,7 +63,7 @@ void _beep(int frequency, int duration) {
 }
 
 bool is_key_pressed(char smallkey) { //unix version requires small letters
-    
+#pragma warning "Key press detection not implemented for platform other than Windows"
     initscr(); // Initialize the ncurses screen
     raw(); // Line buffering disabled
     keypad(stdscr, TRUE); // Enable function keys

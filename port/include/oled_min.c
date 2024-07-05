@@ -42,7 +42,7 @@ void OLED_clear(void) {
 }
 
 // OLED global variables
-uint8_t line, column, scroll;
+uint8_t column, scroll;
 
 // OLED plot a single character
 void OLED_plotChar(char c) {
@@ -65,26 +65,26 @@ void OLED_write(char c) {
         OLED_plotChar(c);
         if (++column > 20) {
             column = 0;
-            if (line == 7)
+            if (cursor.y == 7)
                 OLED_scrollDisplay();
             else
-                line++;
-            OLED_setline((line + scroll) & 0x07);
+                cursor.y++;
+            OLED_setline((cursor.y + scroll) & 0x07);
         }
     }
-    // new line
+    // new cursor.y
     else if (c == '\n') {
         column = 0;
-        if (line == 7)
+        if (cursor.y == 7)
             OLED_scrollDisplay();
         else
-            line++;
-        OLED_setline((line + scroll) & 0x07);
+            cursor.y++;
+        OLED_setline((cursor.y + scroll) & 0x07);
     }
     // carriage return
     else if (c == '\r') {
         column = 0;
-        OLED_setline((line + scroll) & 0x07);
+        OLED_setline((cursor.y + scroll) & 0x07);
     }
 }
 
