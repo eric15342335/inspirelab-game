@@ -21,6 +21,7 @@ void _OLED_doNothing(void) {
 void OLED_setpos(uint8_t x, uint8_t y) {
     column = x;
     line = y;
+    scroll = 0;
 }
 
 void OLED_fill(uint8_t p) {
@@ -39,6 +40,7 @@ void OLED_clear(void) {
     }
     column = 0;
     line = 0;
+    scroll = 0;
 }
 
 // OLED plot a single character
@@ -92,7 +94,6 @@ void OLED_print(char * str) {
 
 // OLED print string with newline
 void OLED_println(char * str) {
-    _OLED_refresh_display();
     OLED_print(str);
     OLED_write('\n');
 }
@@ -105,7 +106,7 @@ void OLED_setline(uint8_t new_line) {
 }
 
 void OLED_scrollDisplay(void) {
-    int numVertical = SCREEN_Y / AXIS_Y_STORAGE;
+    const int numVertical = SCREEN_Y / AXIS_Y_STORAGE;
     for (int xCoord = 0; xCoord < SCREEN_X; xCoord++) {
         // Copy the next line to the current line
         for (int yCoord = 0; yCoord < numVertical - 1; yCoord++) {
@@ -127,7 +128,7 @@ void _OLED_setBuffer(uint8_t data) {
     column++;
     if (column >= SCREEN_X) {
         column = 0;
-        if (line == 7)
+        if (line > 7)
             OLED_scrollDisplay();
         else
             line++;
