@@ -290,8 +290,6 @@ uint8_t gameboard_to_hex(const uint8_t x, const uint8_t y) {
         default:
             return 0x00;
     }
-    return 0x00;
-    // gives out the hex value of the pixel to be displayed
 }
 
 void display(void) {
@@ -304,7 +302,7 @@ void display(void) {
         }
         JOY_OLED_end();
     }
-    OLED_init();
+    _OLED_refresh_display();
 }
 
 void displayData(uint8_t _image_data[]) {
@@ -316,7 +314,7 @@ void displayData(uint8_t _image_data[]) {
         }
         JOY_OLED_end();
     }
-    OLED_init();
+    _OLED_refresh_display();
 }
 
 int main(void) {
@@ -338,10 +336,11 @@ int main(void) {
         }
         playMusic((noterange_t){12, 13});
     }
-    //while(1) playAllMusic();
+    
+    OLED_println("Press any key to start");
+    _OLED_refresh_display();
     display();
     uint16_t seed = 0;
-    OLED_println("Press any key to start");
     while (!JOY_pad_pressed()) {
         seed++;
         if (seed > 65530) {

@@ -337,7 +337,7 @@ int main(void) {
         playMusic((noterange_t){12, 13});
     }
     
-    OLED_println("Press any key to start");
+    //OLED_println("Press any key to start");
     _OLED_refresh_display();
     display();
     uint16_t seed = 0;
@@ -347,7 +347,7 @@ int main(void) {
             seed = 0;
         } // boundary check of uint16_t rnval
         // generate a seed according to the time between boot and button pressed
-        DLY_ms(50);
+        DLY_ms(1);
         // wait for the button to be pressed
     }
     JOY_setseed(seed);

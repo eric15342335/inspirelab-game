@@ -9,3 +9,4 @@
 **/*.map
 **/*.exe
 **/*.obj
+**/.DS_Store

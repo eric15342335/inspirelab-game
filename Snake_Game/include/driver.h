@@ -57,7 +57,7 @@ static inline void JOY_init(void) {
 #define JOY_OLED_send(b)          I2C_write(b)
 #define JOY_OLED_send_command(c)  OLED_send_command(c)
 #define JOY_OLED_data_start(y)    {OLED_setpos(0,y);OLED_data_start();}
-#define _OLED_refresh_display()   {(void);}
+#define _OLED_refresh_display()
 
 // Buttons
 #define JOY_act_pressed()         (!PIN_read(PIN_ACT))
