@@ -31,6 +31,9 @@ which allows code using such libraries to run on desktop platforms for ease of d
 
 * Contains an [python script](utility/pixelConvert.py) that faciliates game texture conversion from 128x64 png file to C-array which the OLED monitor accepts
 
+![image](https://github.com/eric15342335/inspirelab-game/assets/70310617/66b99c52-8682-482c-8fdb-ba39357e72e0)
+
+
 ## Links
 
 * Original Repository: <https://github.com/wagiminator/CH32V003-GameConsole>
