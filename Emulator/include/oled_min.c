@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-coord_t cursor = {.x = 0, .y = 0};
+static uint8_t line, column, scroll;
 
 uint8_t BUFFER[BUFFER_SIZE];
 
@@ -19,8 +19,8 @@ void _OLED_doNothing(void) {
 }
 
 void OLED_setpos(uint8_t x, uint8_t y) {
-    cursor.x = x;
-    cursor.y = y;
+    column = x;
+    line = y;
 }
 
 void OLED_fill(uint8_t p) {
@@ -37,12 +37,9 @@ void OLED_clear(void) {
     for (int i = 0; i < BUFFER_SIZE; i++) {
         BUFFER[i] = 0;
     }
-    cursor.x = 0;
-    cursor.y = 0;
+    column = 0;
+    line = 0;
 }
-
-// OLED global variables
-uint8_t column, scroll;
 
 // OLED plot a single character
 void OLED_plotChar(char c) {
@@ -50,7 +47,6 @@ void OLED_plotChar(char c) {
     ptr += ptr << 2;       // -> ptr = (ch - 32) * 5;
     OLED_data_start();
     for (uint8_t i = 5; i; i--) {
-        // printf("Set buffer at (%d, %d) to %d\n", cursor.x, cursor.y, OLED_FONT[ptr]);
         I2C_write(OLED_FONT[ptr++]);
     }
     I2C_write(0x00); // write space between characters
@@ -63,28 +59,28 @@ void OLED_write(char c) {
     // normal character
     if (c >= 32) {
         OLED_plotChar(c);
-        if (++column > 20) {
+        if (++column > SCREEN_X - 6) {
             column = 0;
-            if (cursor.y == 7)
+            if (line == 7)
                 OLED_scrollDisplay();
             else
-                cursor.y++;
-            OLED_setline((cursor.y + scroll) & 0x07);
+                line++;
+            OLED_setline((line + scroll) & 0x07);
         }
     }
-    // new cursor.y
+    // new line
     else if (c == '\n') {
         column = 0;
-        if (cursor.y == 7)
+        if (line == 7)
             OLED_scrollDisplay();
         else
-            cursor.y++;
-        OLED_setline((cursor.y + scroll) & 0x07);
+            line++;
+        OLED_setline((line + scroll) & 0x07);
     }
     // carriage return
     else if (c == '\r') {
         column = 0;
-        OLED_setline((cursor.y + scroll) & 0x07);
+        OLED_setline((line + scroll) & 0x07);
     }
 }
 
@@ -92,45 +88,59 @@ void OLED_write(char c) {
 void OLED_print(char * str) {
     while (*str)
         OLED_write(*str++);
-    _OLED_refresh_display();
 }
 
 // OLED print string with newline
 void OLED_println(char * str) {
+    _OLED_refresh_display();
     OLED_print(str);
     OLED_write('\n');
 }
 
-void OLED_setline(uint8_t line) {
+void OLED_setline(uint8_t new_line) {
     OLED_data_start();
-    cursor.y = line;
-    cursor.x = 0;
+    line = new_line;
+    column = 0;
     JOY_OLED_end();
 }
 
 void OLED_scrollDisplay(void) {
-    for (int i = 0; i < SCREEN_X; i++) {
-        for (int j = 0; j < SCREEN_Y / AXIS_Y_STORAGE - 1; j++) {
-            BUFFER[j * SCREEN_X + i] = BUFFER[(j + 1) * SCREEN_X + i];
+    int numVertical = SCREEN_Y / AXIS_Y_STORAGE;
+    for (int xCoord = 0; xCoord < SCREEN_X; xCoord++) {
+        // Copy the next line to the current line
+        for (int yCoord = 0; yCoord < numVertical - 1; yCoord++) {
+            int byteIndex = yCoord * SCREEN_X + xCoord;
+            int nextByteIndex = (yCoord + 1) * SCREEN_X + xCoord;
+            BUFFER[byteIndex] = BUFFER[nextByteIndex];
         }
-        BUFFER[(SCREEN_Y / AXIS_Y_STORAGE - 1) * SCREEN_X + i] = 0;
+        // Clear the last line
+        int byteIndex = (numVertical - 1) * SCREEN_X + xCoord;
+        BUFFER[byteIndex] = 0;
     }
     scroll = (scroll + 1) & 0x07;
 }
 
 void _OLED_setBuffer(uint8_t data) {
-    // Set the buffer at the cursor position
-    int byteIndex = cursor.y * SCREEN_X + cursor.x;
+    // Set the buffer at the current line and column
+    int byteIndex = line * SCREEN_X + column;
     BUFFER[byteIndex] = data;
-    cursor.x++;
-    //printf("Set buffer at (%d, %d) to %d\n", cursor.x, cursor.y, data);
+    column++;
+    if (column >= SCREEN_X) {
+        column = 0;
+        if (line == 7)
+            OLED_scrollDisplay();
+        else
+            line++;
+        OLED_setline((line + scroll) & 0x07);
+    }
 }
 
 void _OLED_refresh_display() {
     // Clear the screen
     printf("\033[2J\033[H");
+#define BORDER_X 2
     // upper border
-    for (int x = 0; x < SCREEN_X + 2; x++) {
+    for (int x = 0; x < SCREEN_X + BORDER_X; x++) {
         printf("-");
     }
     printf("\n");
@@ -147,7 +157,7 @@ void _OLED_refresh_display() {
         printf("\n");
     }
     // lower border
-    for (int x = 0; x < SCREEN_X + 2; x++) {
+    for (int x = 0; x < SCREEN_X + BORDER_X; x++) {
         printf("-");
     }
     printf("\n");

@@ -4,13 +4,6 @@
 
 #include <stdint.h>
 
-typedef struct coord {
-    uint8_t x; // < SCREEN_X
-    uint8_t y; // < SCREEN_Y
-} coord_t;
-
-extern coord_t cursor;
-
 #define SCREEN_X 128
 #define SCREEN_Y 64
 #define AXIS_Y_STORAGE 8
