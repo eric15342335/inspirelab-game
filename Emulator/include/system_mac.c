@@ -120,12 +120,14 @@ bool is_key_pressed(char specificKey) {
     setNonBlockingMode(&oldf);
     char ch;
     int nread = read(STDIN_FILENO, &ch, 1);
+    bool returnvalue = false;
     if (nread > 0) {
-        resetMode(&oldt);
-        resetBlockingMode(oldf);
-        return true;
+        if (ch == specificKey) {
+            returnvalue = true;
+        }
     }
+    usleep(10000);
     resetMode(&oldt);
     resetBlockingMode(oldf);
-    return false;
+    return returnvalue;
 }
