@@ -20,6 +20,6 @@ int pressedKeyCount_;
 void pthread_init();
 
 void _beep(int frequency, int duration);
-bool is_key_pressed(int raw_keyboard_input);
+bool is_key_pressed(CGKeyCode keyCode);
 
 #endif

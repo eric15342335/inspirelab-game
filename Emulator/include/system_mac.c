@@ -6,7 +6,6 @@
 #include "system_mac.h"
 
 // Callback function to generate the audio data
-
 void AudioCallback(void *userData, AudioQueueRef queue, AudioQueueBufferRef buffer) {
     int frequency = *((int *)userData);
     int sampleRate = 44100;
@@ -62,26 +61,43 @@ void _beep(int frequency, int duration) {
     AudioQueueDispose(queue, true);
 }
 
+#define MAX_KEYS 6
 
+CGKeyCode pressedKeys[MAX_KEYS];
+int pressedKeyCount = 0;
 pthread_mutex_t keyMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_t thread;
 
 void addKey(CGKeyCode keyCode) {
-    for (int i = 0; i < pressedKeyCount_; i++) {
+    for (int i = 0; i < pressedKeyCount; i++) {
         if (pressedKeys[i] == keyCode) return; // Key already in array
     }
-    if (pressedKeyCount_ < MAX_KEYS) {
-        pressedKeys[pressedKeyCount_++] = keyCode;
+    if (pressedKeyCount < MAX_KEYS) {
+        pressedKeys[pressedKeyCount++] = keyCode;
     }
 }
 
 void removeKey(CGKeyCode keyCode) {
-    for (int i = 0; i < pressedKeyCount_; i++) {
+    for (int i = 0; i < pressedKeyCount; i++) {
         if (pressedKeys[i] == keyCode) {
             // Move last element to this position and decrease count
-            pressedKeys[i] = pressedKeys[--pressedKeyCount_];
+            pressedKeys[i] = pressedKeys[--pressedKeyCount];
             return;
         }
     }
+}
+
+bool is_key_pressed(CGKeyCode keyCode) {
+    bool pressed = false;
+    pthread_mutex_lock(&keyMutex);
+    for (int i = 0; i < pressedKeyCount; i++) {
+        if (pressedKeys[i] == keyCode) {
+            pressed = true;
+            break;
+        }
+    }
+    pthread_mutex_unlock(&keyMutex);
+    return pressed;
 }
 
 CGEventRef keyboardCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
@@ -91,13 +107,13 @@ CGEventRef keyboardCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef 
 
     CGKeyCode keyCode = (CGKeyCode)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
 
-    pthread_mutex_lock(& keyMutex);
+    pthread_mutex_lock(&keyMutex);
     if (type == kCGEventKeyDown) {
         addKey(keyCode);
     } else if (type == kCGEventKeyUp) {
         removeKey(keyCode);
     }
-    pthread_mutex_unlock(& keyMutex);
+    pthread_mutex_unlock(&keyMutex);
 
     return event;
 }
@@ -110,6 +126,7 @@ void* eventTapThread(void* arg) {
                                 kCGEventMaskForAllEvents, keyboardCallback, NULL);
 
     if (!eventTap) {
+        fprintf(stderr, "Failed to create event tap\n");
         return NULL;
     }
 
@@ -122,30 +139,6 @@ void* eventTapThread(void* arg) {
     return NULL;
 }
 
-void pthread_init() {
+void pthread_init(){
     pthread_create(&thread, NULL, eventTapThread, NULL);
-    pressedKeyCount_ = 0;
-}
-
-bool is_key_pressed(int raw_keyboard_input) {
-    for (int i = 0; i < MAX_KEYS; i++){
-        if (pressedKeys[i] == raw_keyboard_input){
-            return true;
-        }
-    }
-    return false;
-}
-
-int main(){
-    pthread_t thread;
-
-    if (pthread_create(&thread, NULL, eventTapThread, NULL) != 0){
-        return 1;
-    }
-    while (1){
-    if (is_key_pressed(2)){
-        printf("Key is pressed\n");
-    }
-    }
-    return 0;
 }
