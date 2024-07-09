@@ -20,11 +20,15 @@ A link to the original repository is below.
 4. flash the hex file into the game console (`CH32V003J4M6`) using WCH-LinkUtility (`Windows` only) or `todo`
 5. Have fun!
 
+* Notes:
+* the driver in `include` has been modified to allow direct copy from the emulator to run the RISC-V controller
+* buzzer function plays real frequency in Hz
+
 ### Emulator
 
 * `Emulator/include` contains a port of the `Snake_Game/include` libraries
 which allows code using such libraries to run on desktop platforms for ease of debugging
-  * Currently only Windows are supported
+  * Windows / MacOS are supported
   * See [Emulator/README.md](Emulator/README.md) for more information.
 
 ### utility
