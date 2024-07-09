@@ -6,7 +6,6 @@
 #include <stdlib.h>
 
 // OLED commands
-#define JOY_init OLED_init
 #define JOY_OLED_end _OLED_doNothing
 #define JOY_OLED_send(b) _OLED_setBuffer(b)
 #define JOY_OLED_data_start(y)                                                         \
@@ -18,11 +17,18 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#define JOY_init()
 #define DLY_ms(milliseconds) Sleep(milliseconds)
 #define JOY_sound(freq, dur) Beep(freq, dur)
 
-inline bool is_key_pressed(char smallkey) {
-    char capitalkey = smallkey - 32;
+#define JOY_act_pressed() is_key_pressed('F')
+#define JOY_act_released() !is_key_pressed('F')
+#define JOY_up_pressed() is_key_pressed('W')
+#define JOY_down_pressed() is_key_pressed('S')
+#define JOY_left_pressed() is_key_pressed('A')
+#define JOY_right_pressed() is_key_pressed('D')
+
+inline bool is_key_pressed(char capitalkey) {
     SHORT result =
         GetAsyncKeyState((int)capitalkey); // windows.h requires capital letters
     return (result & 0x8000) != 0;
@@ -32,25 +38,23 @@ inline bool is_key_pressed(char smallkey) {
 #include "system_mac.h"
 #include <unistd.h>
 
+#define JOY_init() pthread_init()
+#define DLY_ms(milliseconds) usleep(milliseconds * 1000)
 #define JOY_sound(freq, dur) _beep(freq, dur)
 
-inline void DLY_ms(int milliseconds) {
-    usleep(milliseconds * 1000);
-}
+#define JOY_act_pressed() is_key_pressed(F_Key)
+#define JOY_act_released() !is_key_pressed(F_Key)
+#define JOY_up_pressed() is_key_pressed(W_Key)
+#define JOY_down_pressed() is_key_pressed(S_Key)
+#define JOY_left_pressed() is_key_pressed(A_Key)
+#define JOY_right_pressed() is_key_pressed(D_Key)
+
 #endif
 
-#define JOY_act_pressed() is_key_pressed('f')
-#define JOY_act_released() !is_key_pressed('f')
-#define JOY_up_pressed() is_key_pressed('w')
-#define JOY_down_pressed() is_key_pressed('s')
-#define JOY_left_pressed() is_key_pressed('a')
-#define JOY_right_pressed() is_key_pressed('d')
 #define JOY_pad_pressed()                                                              \
-    (is_key_pressed('w') || is_key_pressed('s') || is_key_pressed('a') ||              \
-        is_key_pressed('d'))
+    (JOY_up_pressed() || JOY_down_pressed() || JOY_left_pressed() || JOY_right_pressed())
 #define JOY_pad_released()                                                             \
-    (!is_key_pressed('w') && !is_key_pressed('s') && !is_key_pressed('a') &&           \
-        !is_key_pressed('d'))
+    (!JOY_up_pressed() && !JOY_down_pressed() && !JOY_left_pressed() && !JOY_right_pressed())
 #define JOY_all_released() (JOY_act_released && !JOY_pad_released)
 
 #define JOY_random() rand()

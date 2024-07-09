@@ -9,7 +9,7 @@ CFLAGS = -Iinclude -Wall -Wextra -flto -O3
 # Libraries
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
-    LDFLAGS = -framework AudioToolbox -framework CoreFoundation
+    LDFLAGS = -framework AudioToolbox -framework CoreFoundation -framework ApplicationServices -pthread
 else
     LDFLAGS =
 endif

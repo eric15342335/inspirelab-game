@@ -2,13 +2,11 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <math.h>
 #include <stdlib.h>
-// #include <ncurses.h>
 #include <unistd.h>
 #include "system_mac.h"
-#include <termios.h>
-#include <fcntl.h>
 
 // Callback function to generate the audio data
+
 void AudioCallback(void *userData, AudioQueueRef queue, AudioQueueBufferRef buffer) {
     int frequency = *((int *)userData);
     int sampleRate = 44100;
@@ -64,70 +62,90 @@ void _beep(int frequency, int duration) {
     AudioQueueDispose(queue, true);
 }
 
-/*
-bool is_key_pressed(char smallkey) { //unix version requires small letters
-#pragma warning "Key press detection not implemented for platform other than Windows"
-    initscr(); // Initialize the ncurses screen
-    raw(); // Line buffering disabled
-    keypad(stdscr, TRUE); // Enable function keys
-    noecho(); // Don't echo while we do getch
-    int ch;
 
-    timeout(0); // Non-blocking getch
-    while ((ch = getch()) != ERR) {
-        if (ch == smallkey) {
-            endwin(); // End the ncurses mode
+pthread_mutex_t keyMutex = PTHREAD_MUTEX_INITIALIZER;
+
+void addKey(CGKeyCode keyCode) {
+    for (int i = 0; i < pressedKeyCount_; i++) {
+        if (pressedKeys[i] == keyCode) return; // Key already in array
+    }
+    if (pressedKeyCount_ < MAX_KEYS) {
+        pressedKeys[pressedKeyCount_++] = keyCode;
+    }
+}
+
+void removeKey(CGKeyCode keyCode) {
+    for (int i = 0; i < pressedKeyCount_; i++) {
+        if (pressedKeys[i] == keyCode) {
+            // Move last element to this position and decrease count
+            pressedKeys[i] = pressedKeys[--pressedKeyCount_];
+            return;
+        }
+    }
+}
+
+CGEventRef keyboardCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
+    if (type != kCGEventKeyDown && type != kCGEventKeyUp) {
+        return event;
+    }
+
+    CGKeyCode keyCode = (CGKeyCode)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
+
+    pthread_mutex_lock(& keyMutex);
+    if (type == kCGEventKeyDown) {
+        addKey(keyCode);
+    } else if (type == kCGEventKeyUp) {
+        removeKey(keyCode);
+    }
+    pthread_mutex_unlock(& keyMutex);
+
+    return event;
+}
+
+void* eventTapThread(void* arg) {
+    CFMachPortRef eventTap;
+    CFRunLoopSourceRef runLoopSource;
+
+    eventTap = CGEventTapCreate(kCGSessionEventTap, kCGHeadInsertEventTap, 0,
+                                kCGEventMaskForAllEvents, keyboardCallback, NULL);
+
+    if (!eventTap) {
+        return NULL;
+    }
+
+    runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0);
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopCommonModes);
+    CGEventTapEnable(eventTap, true);
+
+    CFRunLoopRun();
+
+    return NULL;
+}
+
+void pthread_init() {
+    pthread_create(&thread, NULL, eventTapThread, NULL);
+    pressedKeyCount_ = 0;
+}
+
+bool is_key_pressed(int raw_keyboard_input) {
+    for (int i = 0; i < MAX_KEYS; i++){
+        if (pressedKeys[i] == raw_keyboard_input){
             return true;
         }
     }
-    endwin(); // End the ncurses mode
     return false;
 }
-*/
 
-void setRawMode(struct termios *oldt) {
-    struct termios newt = *oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-}
+int main(){
+    pthread_t thread;
 
-// Function to reset terminal to original mode
-void resetMode(struct termios *oldt) {
-    tcsetattr(STDIN_FILENO, TCSANOW, oldt);
-}
-
-// Function to set non-blocking mode
-void setNonBlockingMode(int *oldf) {
-    *oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-    fcntl(STDIN_FILENO, F_SETFL, *oldf | O_NONBLOCK);
-}
-
-// Function to reset blocking mode
-void resetBlockingMode(int oldf) {
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
-}
-
-// Function to detect if a specific key is pressed
-bool is_key_pressed(char specificKey) {
-    struct termios oldt;
-    int oldf;
-
-    // Get the current terminal settings
-    tcgetattr(STDIN_FILENO, &oldt);
-
-    // Set terminal to raw mode and non-blocking mode
-    setRawMode(&oldt);
-    setNonBlockingMode(&oldf);
-    char ch;
-    int nread = read(STDIN_FILENO, &ch, 1);
-    bool returnvalue = false;
-    if (nread > 0) {
-        if (ch == specificKey) {
-            returnvalue = true;
-        }
+    if (pthread_create(&thread, NULL, eventTapThread, NULL) != 0){
+        return 1;
     }
-    usleep(10000);
-    resetMode(&oldt);
-    resetBlockingMode(oldf);
-    return returnvalue;
+    while (1){
+    if (is_key_pressed(2)){
+        printf("Key is pressed\n");
+    }
+    }
+    return 0;
 }
