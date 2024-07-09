@@ -101,6 +101,8 @@ bool is_key_pressed(CGKeyCode keyCode) {
 }
 
 CGEventRef keyboardCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
+    (void)proxy;
+    (void)refcon;
     if (type != kCGEventKeyDown && type != kCGEventKeyUp) {
         return event;
     }
@@ -119,6 +121,7 @@ CGEventRef keyboardCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef 
 }
 
 void* eventTapThread(void* arg) {
+    (void)arg;
     CFMachPortRef eventTap;
     CFRunLoopSourceRef runLoopSource;
 
