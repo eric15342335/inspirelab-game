@@ -395,7 +395,7 @@ int main(){
             break;
         case 'd':
             OLED_println("Draw!");
-            JOY_sound(1000, 500);
+            JOY_sound(1000, 1000);
             break;
     }
     _OLED_refresh_display();
