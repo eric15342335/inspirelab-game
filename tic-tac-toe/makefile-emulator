@@ -1,0 +1,43 @@
+# cl -MD -GL -D_HAS_EXCEPTIONS=0 -GR- -O1 -Oy- -W4 -sdl -I../emulator/include ../emulator/include/oled_min.c tic-tac-toe.c user32.lib -Fe:tic-tac-toe.exe
+
+# Compiler
+CC = gcc
+
+# Compiler flags
+CFLAGS = -I../emulator/include -Wall -Wextra -g -O1 -Wshadow -Wundef -Wswitch -Wcast-qual 
+
+# Libraries
+UNAME_S := $(shell uname -s)
+LDFLAGS =
+ifeq ($(UNAME_S), Darwin)
+    LDFLAGS = -framework AudioToolbox -framework CoreFoundation -framework ApplicationServices -pthread
+endif
+
+# Source and object files
+SRCS = tic-tac-toe.c
+SRCS += $(wildcard ../emulator/include/*.c)
+ifneq ($(UNAME_S), Darwin)
+SRCS := $(filter-out ../emulator/include/system_mac.c,$(SRCS))
+endif
+OBJS = $(SRCS:.c=.o)
+
+# Output binary
+TARGET = tic-tac-toe
+
+# Default target
+all: $(TARGET)
+
+# Linking
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) $(LDFLAGS) -o $(TARGET)
+
+# Compiling
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Clean up
+clean:
+	rm -f $(OBJS) $(TARGET)
+
+# Phony targets
+.PHONY: all clean

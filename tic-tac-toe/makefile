@@ -1,43 +1,101 @@
-# cl -MD -GL -D_HAS_EXCEPTIONS=0 -GR- -O1 -Oy- -W4 -sdl -I../emulator/include ../emulator/include/oled_min.c tic-tac-toe.c user32.lib -Fe:tic-tac-toe.exe
+# ===================================================================================
+# Project:  CH32V003 Tiny Tris
+# Author:   Stefan Wagner
+# Year:     2023
+# URL:      https://github.com/wagiminator
+# ===================================================================================
+# Type "make help" in the command line.
+# ===================================================================================
 
-# Compiler
-CC = gcc
+# Files and Folders
+MAINFILE = tic-tac-toe.c
+TARGET   = tic-tac-toe
+INCLUDE  = ../riscv/include
 
-# Compiler flags
-CFLAGS = -I../emulator/include -Wall -Wextra -g -O1 -Wshadow -Wundef -Wswitch -Wcast-qual 
+# Microcontroller Settings
+F_CPU    = 12000000
+LDSCRIPT = ../riscv/linker/ch32v003.ld
+CPUARCH  = -march=rv32ec -mabi=ilp32e
 
-# Libraries
-UNAME_S := $(shell uname -s)
-LDFLAGS =
-ifeq ($(UNAME_S), Darwin)
-    LDFLAGS = -framework AudioToolbox -framework CoreFoundation -framework ApplicationServices -pthread
-endif
+# Toolchain
+PREFIX   = riscv-none-elf
+CC       = $(PREFIX)-gcc
+OBJCOPY  = $(PREFIX)-objcopy
+OBJDUMP  = $(PREFIX)-objdump
+OBJSIZE  = $(PREFIX)-size
+CLEAN    = rm -f *.lst *.obj *.cof *.list *.map *.eep.hex *.o *.d
 
-# Source and object files
-SRCS = tic-tac-toe.c
-SRCS += $(wildcard ../emulator/include/*.c)
-ifneq ($(UNAME_S), Darwin)
-SRCS := $(filter-out ../emulator/include/system_mac.c,$(SRCS))
-endif
-OBJS = $(SRCS:.c=.o)
+# Compiler Flags
+CFLAGS   = $(CPUARCH) -DF_CPU=$(F_CPU) -I$(INCLUDE) -I. -L$(INCLUDE)
+CFLAGS  += -g -Os -flto -ffunction-sections -fno-builtin -Wall -Wextra -Wswitch -Wcast-qual -Wundef
+LDFLAGS  = -T$(LDSCRIPT) -nostdlib -lgcc -static-libgcc -Wl,--gc-sections
+CFILES   = $(MAINFILE) $(wildcard $(INCLUDE)/*.c) $(wildcard $(INCLUDE)/*.S)
 
-# Output binary
-TARGET = tic-tac-toe
+default: all
 
-# Default target
-all: $(TARGET)
+# Symbolic Targets
+help:
+	@echo "Use the following commands:"
+	@echo "make all       compile and build $(TARGET).elf/.bin/.hex/.asm"
+	@echo "make hex       compile and build $(TARGET).hex"
+	@echo "make asm       compile and disassemble to $(TARGET).asm"
+	@echo "make bin       compile and build $(TARGET).bin"
+	@echo "make clean     remove all build files"
 
-# Linking
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS) -o $(TARGET)
+$(TARGET).elf: $(CFILES)
+	@echo "Building $(TARGET).elf ..."
+	@$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
-# Compiling
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+$(TARGET).lst: $(TARGET).elf
+	@echo "Building $(TARGET).lst ..."
+	@$(OBJDUMP) -S $^ > $(TARGET).lst
 
-# Clean up
+$(TARGET).map: $(TARGET).elf
+	@echo "Building $(TARGET).map ..."
+	@$(OBJDUMP) -t $^ > $(TARGET).map
+
+$(TARGET).bin: $(TARGET).elf
+	@echo "Building $(TARGET).bin ..."
+	@$(OBJCOPY) -O binary $< $(TARGET).bin
+
+$(TARGET).hex: $(TARGET).elf
+	@echo "Building $(TARGET).hex ..."
+	@$(OBJCOPY) -O ihex $< $(TARGET).hex
+
+$(TARGET).asm: $(TARGET).elf
+	@echo "Disassembling to $(TARGET).asm ..."
+	@$(OBJDUMP) -d $(TARGET).elf > $(TARGET).asm
+
+all:	$(TARGET).lst $(TARGET).map $(TARGET).bin $(TARGET).hex $(TARGET).asm size
+
+elf:	$(TARGET).elf removetemp size
+
+bin:	$(TARGET).bin removetemp size removeelf
+
+hex:	$(TARGET).hex removetemp size removeelf
+
+asm:	$(TARGET).asm removetemp size removeelf
+
 clean:
-	rm -f $(OBJS) $(TARGET)
+	@echo "Cleaning all up ..."
+	@$(CLEAN)
+	@rm -f $(TARGET).elf $(TARGET).bin $(TARGET).hex $(TARGET).asm
 
-# Phony targets
-.PHONY: all clean
+size:
+	@echo "------------------"
+	@echo "FLASH: $(shell $(OBJSIZE) -d $(TARGET).elf | awk '/[0-9]/ {print $$1 + $$2}') bytes"
+	@echo "SRAM:  $(shell $(OBJSIZE) -d $(TARGET).elf | awk '/[0-9]/ {print $$2 + $$3}') bytes"
+	@echo "------------------"
+
+removetemp:
+	@echo "Removing temporary files ..."
+	@$(CLEAN)
+
+removeelf:
+	@echo "Removing $(TARGET).elf ..."
+	@rm -f $(TARGET).elf
+
+emulator:
+	$(MAKE) -f makefile-emulator
+
+.PHONY: all elf bin hex asm clean size removetemp removeelf emulator
