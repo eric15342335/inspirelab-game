@@ -5,6 +5,92 @@ char gameboard[9] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}; // 3x3 gamebo
 
 int8_t selectpos; // position of the cursor
 
+
+uint8_t circle_to_hex(const uint8_t x, const uint8_t y){
+    #define boxoffset 2
+    #define topoffset 3
+    #define middleoffset 0
+    #define bottomoffset 5
+    uint8_t boxStartX;
+    uint8_t displaycircle;
+    if (x <= leftborder + 1|| x >= rightborder - 3){
+        return 0x00;
+    }
+    if (gameboard[0] == 'O' && !(x >= middleleftborder - 3|| y > middletopborder)){
+        displaycircle  = 0xFF;
+        boxStartX = leftborder + boxoffset;
+    }
+    else if (gameboard[1] == 'O' && !(x <= middleleftborder + 1 ||x >= middlerightborder - 3|| y > middletopborder)){
+        displaycircle  = 0xFF;
+        boxStartX = middleleftborder + boxoffset;
+    }
+    else if (gameboard[2] == 'O' && !(x <= middlerightborder + 1 || y > middletopborder)){
+        displaycircle  = 0xFF;
+        boxStartX = middlerightborder + boxoffset;
+    }
+    else if (gameboard[3] == 'O' && !(x >= middleleftborder - 3 || y <= middletopborder || y >= middlebottomborder)){
+        displaycircle  = 0xFF;
+        boxStartX = leftborder + boxoffset;
+    }
+    else if (gameboard[4] == 'O' && !(x <= middleleftborder + 1 || x >= middlerightborder - 3 || y <= middletopborder || y >= middlebottomborder)){
+        displaycircle  = 0xFF;
+        boxStartX = middleleftborder + boxoffset;
+    }
+    else if (gameboard[5] == 'O' && !(x <= middlerightborder + 1 || y <= middletopborder || y >= middlebottomborder)){
+        displaycircle  = 0xFF;
+        boxStartX = middlerightborder + boxoffset;
+    }
+    else if (gameboard[6] == 'O' && !(x >= middleleftborder - 3 || y < middlebottomborder)){
+        displaycircle  = 0xFF;
+        boxStartX = leftborder + boxoffset;
+    }
+    else if (gameboard[7] == 'O' && !(x <= middleleftborder + 1 || x >= middlerightborder - 3 || y < middlebottomborder)){
+        displaycircle  = 0xFF;
+        boxStartX = middleleftborder + boxoffset;
+    }
+    else if (gameboard[8] == 'O' && !(x <= middlerightborder + 1 || y < middlebottomborder)){
+        displaycircle  = 0xFF;
+        boxStartX = middlerightborder + boxoffset;
+    }
+    else {
+        return 0x00;
+    }
+    // the above code is to determine if the circle should be displayed
+
+    uint8_t circlepixel;
+    switch (y) {
+        case 0:
+            circlepixel =  circle[x - boxStartX] << topoffset;
+            break;
+        case 1:
+            circlepixel = ((circle[x - boxStartX] >> (8 - topoffset)) | (circle[x - boxStartX + 16] << topoffset));
+            break;
+        case 2:
+            circlepixel = circle[x - boxStartX + 16] >> (8 - topoffset); //top boxes
+            break;
+        case 3:
+            circlepixel = circle[x - boxStartX] << middleoffset;
+            break;
+        case 4:
+            circlepixel = ((circle[x - boxStartX] >> (8 - middleoffset)) | (circle[x - boxStartX + 16] << middleoffset)); //middle boxes
+            break;
+        case 5:
+            circlepixel = circle[x - boxStartX] << bottomoffset;
+            break;
+        case 6:
+            circlepixel = ((circle[x - boxStartX] >> (8 - bottomoffset)) | (circle[x - boxStartX + 16] << bottomoffset));
+            break;
+        case 7:
+            circlepixel = circle[x - boxStartX + 16] >> (8 - bottomoffset); //bottom boxes
+            break;
+        default:
+            return 0x00;
+        }
+    return circlepixel & displaycircle;
+    //bitwise and to only display the circle where it should be
+
+}
+
 uint8_t cross_to_hex(const uint8_t x, const uint8_t y){
         #define boxoffset 2
     #define topoffset 3
@@ -53,7 +139,7 @@ uint8_t cross_to_hex(const uint8_t x, const uint8_t y){
     }
     else {
         return 0x00;
-    }
+    } //the above code is to determine if the cross should be displayed
 
     uint8_t crosspixel;
     switch (y) {
@@ -85,6 +171,7 @@ uint8_t cross_to_hex(const uint8_t x, const uint8_t y){
             return 0x00;
         }
     return crosspixel & displaycross;
+    //bitwise and to only display the circle where it should be
 
 }
 
@@ -212,7 +299,7 @@ void display(void) {
         JOY_OLED_data_start(y);
         for (x = 0; x < 128; x++) {
             JOY_OLED_send(gameboard_to_hex(x, y) | select_to_hex(x, y) |
-                          cross_to_hex(x, y));
+                          cross_to_hex(x, y) | circle_to_hex(x,y));
         }
         JOY_OLED_end();
     }
@@ -250,13 +337,23 @@ void selectposition(){
     }
 }
 
+void play(){
+    uint8_t i;
+    for (i = 0; i < 9; i++){
+        if (gameboard[i] == ' '){
+            gameboard[i] = 'O';
+            display();
+            break;
+        }
+    }
+} //temp for test only
+
 int main(){
     JOY_init();
     display();
     while (1){
         selectposition();
-        //play();
-        //display();
+        play();
         //if (checkwin() == 1){
         //    break;
         DLY_ms(100);
