@@ -5,78 +5,95 @@ char gameboard[9] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}; // 3x3 gamebo
 uint8_t selectpos; // position of the cursor
 
 uint8_t select_to_hex(const uint8_t x, const uint8_t y){
-    if (x <= leftborder || x >= rightborder){
+    #define boxoffset 2
+    #define topoffset 3
+    #define middleoffset 0
+    #define bottomoffset 5
+    int boxStartX;
+    if (x <= leftborder + 1|| x >= rightborder - 3){
         return 0x00;
     }
     switch (selectpos){
         case 0:
-            if (x >= middleleftborder || y >= middletopborder){
+            if (x >= middleleftborder - 3|| y > middletopborder){
                 return 0x00;
             }
-            else{
-                return selectframe[x - leftborder - 1 + y * 16];
-            }
+            boxStartX = leftborder + boxoffset;
+            break;
         case 1:
-            if (x <= middleleftborder || x >= middlerightborder || y >= middletopborder){
+            if (x <= middleleftborder + 1 ||x >= middlerightborder - 3|| y > middletopborder){
                 return 0x00;
             }
-            else{
-                return selectframe[x - middleleftborder - 1 + y * 16];
-            }
+            boxStartX = middleleftborder + boxoffset;
+            break;
         case 2:
-            if (x <= middlerightborder || y >= middletopborder){
+            if (x <= middlerightborder + 1 || y > middletopborder){
                 return 0x00;
             }
-            else{
-                return selectframe[x - middlerightborder - 1 + y * 16];
-            }
+            boxStartX = middlerightborder + boxoffset;
+            break;
         case 3:
-            if (x >= middleleftborder || y <= middletopborder || y >= middlebottomborder){
+            if (x >= middleleftborder - 3 || y <= middletopborder || y >= middlebottomborder){
                 return 0x00;
             }
-            else{
-                return selectframe[x - leftborder - 1 + (y - middletopborder) * 16];
-            }
+            boxStartX = leftborder + boxoffset;
+            break;
         case 4:
-            if (x <= middleleftborder || x >= middlerightborder || y <= middletopborder || y >= middlebottomborder){
+            if (x <= middleleftborder + 1 || x >= middlerightborder - 3 || y <= middletopborder || y >= middlebottomborder){
                 return 0x00;
             }
-            else{
-                return selectframe[x - middleleftborder - 1 + (y - middletopborder) * 16];
-            }
+            boxStartX = middleleftborder + boxoffset;
+            break;
         case 5:
-            if (x <= middlerightborder || y <= middletopborder || y >= middlebottomborder){
+            if (x <= middlerightborder + 1 || y <= middletopborder || y >= middlebottomborder){
                 return 0x00;
             }
-            else{
-                return selectframe[x - middlerightborder - 1 + (y - middletopborder) * 16];
-            }
+            boxStartX = middlerightborder + boxoffset;
+            break;
         case 6:
-            if (x >= middleleftborder || y <= middlebottomborder){
+            if (x >= middleleftborder - 3 || y < middlebottomborder){
                 return 0x00;
             }
-            else{
-                return selectframe[x - leftborder - 1 + (y - middlebottomborder) * 16];
-            }
+            boxStartX = leftborder + boxoffset;
+            break;
         case 7:
-            if (x <= middleleftborder || x >= middlerightborder || y <= middlebottomborder){
+            if (x <= middleleftborder + 1 || x >= middlerightborder - 3 || y < middlebottomborder){
                 return 0x00;
             }
-            else{
-                return selectframe[x - middleleftborder - 1 + (y - middlebottomborder) * 16];
-            }
+            boxStartX = middleleftborder + boxoffset;
+            break;
         case 8:
-            if (x <= middlerightborder || y <= middlebottomborder){
+            if (x <= middlerightborder + 1 || y < middlebottomborder){
                 return 0x00;
             }
-            else{
-                return selectframe[x - middlerightborder - 1 + (y - middlebottomborder) * 16];
-            }
+            boxStartX = middlerightborder + boxoffset;
+            break;
+        default:
+            break;
+        }
+    switch (y) {
+        case 0:
+            return selectframe[x - boxStartX] << topoffset;
+        case 1:
+            return ((selectframe[x - boxStartX] >> (8 - topoffset)) | (selectframe[x - boxStartX + 16] << topoffset));
+        case 2:
+            return selectframe[x - boxStartX + 16] >> (8 - topoffset); //top boxes
+        case 3:
+            return selectframe[x - boxStartX] << middleoffset;
+        case 4:
+            return ((selectframe[x - boxStartX] >> (8 - middleoffset)) | (selectframe[x - boxStartX + 16] << middleoffset)); //middle boxes
+        case 5:
+            return selectframe[x - boxStartX] << bottomoffset;
+        case 6:
+            return ((selectframe[x - boxStartX] >> (8 - bottomoffset)) | (selectframe[x - boxStartX + 16] << bottomoffset));
+        case 7:
+            return selectframe[x - boxStartX + 16] >> (8 - bottomoffset); //bottom boxes
         default:
             return 0x00;
-    }
-
+        }
+    return 0x00; //shut up compiler
 }
+    
 
 uint8_t gameboard_to_hex(const uint8_t x, const uint8_t y){
     if (x == leftborder || x == rightborder || x == middleleftborder || x == middlerightborder){
@@ -121,7 +138,7 @@ void selectposition(){
             selectpos -= 3;
             display();
         }
-        else if (JOY_down_pressed() && selectpos < 7){
+        else if (JOY_down_pressed() && selectpos < 6){
             selectpos += 3;
             display();
         }
