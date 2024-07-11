@@ -2,7 +2,90 @@
 #include "tic-tac-toe.h"
 
 char gameboard[9] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}; // 3x3 gameboard
-uint8_t selectpos; // position of the cursor
+
+int8_t selectpos; // position of the cursor
+
+uint8_t cross_to_hex(const uint8_t x, const uint8_t y){
+        #define boxoffset 2
+    #define topoffset 3
+    #define middleoffset 0
+    #define bottomoffset 5
+    uint8_t boxStartX;
+    uint8_t displaycross;
+    if (x <= leftborder + 1|| x >= rightborder - 3){
+        return 0x00;
+    }
+    if (gameboard[0] == 'X' && !(x >= middleleftborder - 3|| y > middletopborder)){
+        displaycross  = 0xFF;
+        boxStartX = leftborder + boxoffset;
+    }
+    else if (gameboard[1] == 'X' && !(x <= middleleftborder + 1 ||x >= middlerightborder - 3|| y > middletopborder)){
+        displaycross  = 0xFF;
+        boxStartX = middleleftborder + boxoffset;
+    }
+    else if (gameboard[2] == 'X' && !(x <= middlerightborder + 1 || y > middletopborder)){
+        displaycross  = 0xFF;
+        boxStartX = middlerightborder + boxoffset;
+    }
+    else if (gameboard[3] == 'X' && !(x >= middleleftborder - 3 || y <= middletopborder || y >= middlebottomborder)){
+        displaycross  = 0xFF;
+        boxStartX = leftborder + boxoffset;
+    }
+    else if (gameboard[4] == 'X' && !(x <= middleleftborder + 1 || x >= middlerightborder - 3 || y <= middletopborder || y >= middlebottomborder)){
+        displaycross  = 0xFF;
+        boxStartX = middleleftborder + boxoffset;
+    }
+    else if (gameboard[5] == 'X' && !(x <= middlerightborder + 1 || y <= middletopborder || y >= middlebottomborder)){
+        displaycross  = 0xFF;
+        boxStartX = middlerightborder + boxoffset;
+    }
+    else if (gameboard[6] == 'X' && !(x >= middleleftborder - 3 || y < middlebottomborder)){
+        displaycross  = 0xFF;
+        boxStartX = leftborder + boxoffset;
+    }
+    else if (gameboard[7] == 'X' && !(x <= middleleftborder + 1 || x >= middlerightborder - 3 || y < middlebottomborder)){
+        displaycross  = 0xFF;
+        boxStartX = middleleftborder + boxoffset;
+    }
+    else if (gameboard[8] == 'X' && !(x <= middlerightborder + 1 || y < middlebottomborder)){
+        displaycross  = 0xFF;
+        boxStartX = middlerightborder + boxoffset;
+    }
+    else {
+        return 0x00;
+    }
+
+    uint8_t crosspixel;
+    switch (y) {
+        case 0:
+            crosspixel =  cross[x - boxStartX] << topoffset;
+            break;
+        case 1:
+            crosspixel = ((cross[x - boxStartX] >> (8 - topoffset)) | (cross[x - boxStartX + 16] << topoffset));
+            break;
+        case 2:
+            crosspixel = cross[x - boxStartX + 16] >> (8 - topoffset); //top boxes
+            break;
+        case 3:
+            crosspixel = cross[x - boxStartX] << middleoffset;
+            break;
+        case 4:
+            crosspixel = ((cross[x - boxStartX] >> (8 - middleoffset)) | (cross[x - boxStartX + 16] << middleoffset)); //middle boxes
+            break;
+        case 5:
+            crosspixel = cross[x - boxStartX] << bottomoffset;
+            break;
+        case 6:
+            crosspixel = ((cross[x - boxStartX] >> (8 - bottomoffset)) | (cross[x - boxStartX + 16] << bottomoffset));
+            break;
+        case 7:
+            crosspixel = cross[x - boxStartX + 16] >> (8 - bottomoffset); //bottom boxes
+        default:
+            return 0x00;
+        }
+    return crosspixel & displaycross;
+
+}
 
 uint8_t select_to_hex(const uint8_t x, const uint8_t y){
     #define boxoffset 2
@@ -10,6 +93,9 @@ uint8_t select_to_hex(const uint8_t x, const uint8_t y){
     #define middleoffset 0
     #define bottomoffset 5
     int boxStartX;
+    if (selectpos == -1){
+        return 0x00;
+    }
     if (x <= leftborder + 1|| x >= rightborder - 3){
         return 0x00;
     }
@@ -124,7 +210,8 @@ void display(void) {
     for (y = 0; y < 8; y++) {
         JOY_OLED_data_start(y);
         for (x = 0; x < 128; x++) {
-            JOY_OLED_send(gameboard_to_hex(x, y) | select_to_hex(x, y));
+            JOY_OLED_send(gameboard_to_hex(x, y) | select_to_hex(x, y) |
+                          cross_to_hex(x, y));
         }
         JOY_OLED_end();
     }
@@ -133,6 +220,7 @@ void display(void) {
 
 void selectposition(){
     selectpos = 4;
+    display();
     while (1){
         if (JOY_up_pressed() && selectpos > 2){
             selectpos -= 3;
@@ -151,6 +239,7 @@ void selectposition(){
             display();
         }
         else if (JOY_act_pressed() && gameboard[selectpos] == ' '){
+            JOY_sound(1000, 100);
             gameboard[selectpos] = 'X';
             selectpos = -1;
             display();
@@ -165,7 +254,6 @@ int main(){
     display();
     while (1){
         selectposition();
-        display();
         //play();
         //display();
         //if (checkwin() == 1){
