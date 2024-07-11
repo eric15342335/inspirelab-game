@@ -8,13 +8,13 @@
 # ===================================================================================
 
 # Files and Folders
-MAINFILE = Snake_Game.c
-TARGET   = Snake_Game
-INCLUDE  = include
+MAINFILE = snakegame.c
+TARGET   = snakegame
+INCLUDE  = ../riscv/include
 
 # Microcontroller Settings
 F_CPU    = 12000000
-LDSCRIPT = linker/ch32v003.ld
+LDSCRIPT = ../riscv/linker/ch32v003.ld
 CPUARCH  = -march=rv32ec -mabi=ilp32e
 
 # Toolchain
@@ -95,4 +95,7 @@ removeelf:
 	@echo "Removing $(TARGET).elf ..."
 	@rm -f $(TARGET).elf
 
-.PHONY: all elf bin hex asm clean size removetemp removeelf
+emulator:
+	$(MAKE) -f makefile-emulator
+
+.PHONY: all elf bin hex asm clean size removetemp removeelf emulator
