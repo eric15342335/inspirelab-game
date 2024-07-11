@@ -11,16 +11,17 @@ A link to the original repository is below.
 ### Snake Game
 
 1. Install MounRiver Studio and add the following to `PATH`:
-    * `$(YourInstallDirectory)/MounRiver_Studio/toolchain/RISC-V Embedded GCC 12/bin`
+    * `$(your_install_directory)/MounRiver_Studio/toolchain/RISC-V Embedded GCC 12/bin`
         * For `riscv-none-elf` compiler toolchain
-    * `$(YourInstallDirectory)/MounRiver_Studio/toolchain/Build Tools/bin`
+    * `$(your_install_directory)/MounRiver_Studio/toolchain/Build Tools/bin`
         * For `make` tool
 2. Open terminal in the corresponding game folder (e.g. `snakegame`)
 3. type `make` on the terminal to make the executable for CH32V003
 4. flash the hex file into the game console (`CH32V003J4M6`) using WCH-LinkUtility (`Windows` only) or `todo`
 5. Have fun!
 
-* Notes:
+#### Notes:
+
 * the driver in `riscv/include` has been modified (compared to [original implementation](https://github.com/wagiminator/CH32V003-GameConsole/tree/main/software/tiny_arkanoid/include)) to allow direct copy from the emulator to run the RISC-V controller
 * buzzer function plays real frequency in Hz
 
@@ -30,6 +31,7 @@ A link to the original repository is below.
 which allows code using such libraries to run on desktop platforms for ease of debugging
   * Windows / MacOS are supported
   * See [emulator/README.md](emulator/README.md) for more information.
+  * Usage: `make -f makefile-emulator` inside game directory.
 
 ### Utilities and Tools
 
