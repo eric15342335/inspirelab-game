@@ -20,6 +20,7 @@ void OLED_scrollDisplay(void);
 void OLED_plotChar(char c);
 void OLED_print(char * str);
 void OLED_println(char * str);
+void OLED_printD(uint32_t value);
 #define I2C_write(_data) _OLED_setBuffer(_data)
 
 static const uint8_t OLED_FONT[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F,

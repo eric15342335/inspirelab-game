@@ -98,6 +98,12 @@ void OLED_println(char * str) {
     OLED_write('\n');
 }
 
+void OLED_printD(uint32_t value) {
+    char buffer[11];
+    itoa(value, buffer, 10);
+    OLED_print(buffer);
+}
+
 void OLED_setline(uint8_t new_line) {
     OLED_data_start();
     line = new_line;
