@@ -242,8 +242,6 @@ uint8_t select_to_hex(const uint8_t x, const uint8_t y){
             }
             boxStartX = middlerightborder + boxoffset;
             break;
-        default:
-            break;
         }
     switch (y) {
         case 0:
@@ -265,7 +263,6 @@ uint8_t select_to_hex(const uint8_t x, const uint8_t y){
         default:
             return 0x00;
         }
-    return 0x00; //shut up compiler
 }
     
 
@@ -348,16 +345,66 @@ void play(){
     }
 } //temp for test only
 
+char checkwinside(){
+    for (uint8_t i = 0; i < 9; i += 3){
+        if (gameboard[i] == gameboard[i + 1] && gameboard[i + 1] == gameboard[i + 2] && gameboard[i] != ' '){
+            return gameboard[i];
+        }
+    }
+    //horizontal
+    for (uint8_t i = 0; i < 3; i++){
+        if (gameboard[i] == gameboard[i + 3] && gameboard[i + 3] == gameboard[i + 6] && gameboard[i] != ' '){
+            return gameboard[i];
+        }
+    }
+    //vertial
+    if (gameboard[0] == gameboard[4] && gameboard[4] == gameboard[8] && gameboard[0] != ' '){
+        return gameboard[0];
+    }
+    if (gameboard[2] == gameboard[4] && gameboard[4] == gameboard[6] && gameboard[2] != ' '){
+        return gameboard[2];
+    }
+    //2 diagonals
+    for (uint8_t i = 0; i < 9; i++){
+        if (gameboard[i] == ' '){
+            return 0;
+        }
+    }
+    return 'd'; //check draw or not
+}
+
 int main(){
+    char winner;
     JOY_init();
     display();
     while (1){
         selectposition();
+        winner = checkwinside();
+        if (winner != 0){
+            break;
+        }
         play();
-        //if (checkwin() == 1){
-        //    break;
+        winner = checkwinside();
+        if (winner != 0){
+            break;
+        }
         DLY_ms(100);
         }
+    switch (winner){
+        case 'X':
+            OLED_println("You \nwin!");
+            JOY_sound(1000, 1000);
+            break;
+        case 'O':
+            OLED_println("You \nlose!");
+            JOY_sound(500, 1000);
+            break;
+        case 'd':
+            OLED_println("Draw!");
+            JOY_sound(1000, 500);
+            break;
+    }
+    _OLED_refresh_display();
     return 0;
 
 }
