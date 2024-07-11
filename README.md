@@ -21,22 +21,21 @@ A link to the original repository is below.
 5. Have fun!
 
 * Notes:
-* the driver in `riscv/include` has been modified (compared to [original implementation]()) to allow direct copy from the emulator to run the RISC-V controller
+* the driver in `riscv/include` has been modified (compared to [original implementation](https://github.com/wagiminator/CH32V003-GameConsole/tree/main/software/tiny_arkanoid/include)) to allow direct copy from the emulator to run the RISC-V controller
 * buzzer function plays real frequency in Hz
 
 ### Emulator
 
-* `Emulator/include` contains a port of the `Snake_Game/include` libraries
+* `emulator/include` contains a port of the `riscv/include` libraries
 which allows code using such libraries to run on desktop platforms for ease of debugging
   * Windows / MacOS are supported
-  * See [Emulator/README.md](Emulator/README.md) for more information.
+  * See [emulator/README.md](emulator/README.md) for more information.
 
-### utility
+### Utilities and Tools
 
-* Contains an [python script](utility/pixelConvert.py) that faciliates game texture conversion from 128x64 png file to C-array which the OLED monitor accepts
+* Contains an [python script](utils/pixelConvert.py) that faciliates game texture conversion from 128x64 png file to C-array which the OLED monitor accepts
 
 ![image](https://github.com/eric15342335/inspirelab-game/assets/70310617/66b99c52-8682-482c-8fdb-ba39357e72e0)
-
 
 ## Links
 
