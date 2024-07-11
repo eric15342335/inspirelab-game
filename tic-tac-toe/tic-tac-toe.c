@@ -91,11 +91,11 @@ uint8_t circle_to_hex(const uint8_t x, const uint8_t y){
 
 }
 
-uint8_t cross_to_hex(const uint8_t x, const uint8_t y){
-        #define boxoffset 2
-    #define topoffset 3
-    #define middleoffset 0
-    #define bottomoffset 5
+uint8_t cross_to_hex(const uint8_t x, const uint8_t y) {
+#define boxoffset 2
+#define topoffset 3
+#define middleoffset 0
+#define bottomoffset 5
     uint8_t boxStartX;
     uint8_t displaycross;
     if (x <= leftborder + 1|| x >= rightborder - 3){
@@ -171,7 +171,7 @@ uint8_t cross_to_hex(const uint8_t x, const uint8_t y){
             return 0x00;
         }
     return crosspixel & displaycross;
-    //bitwise and to only display the circle where it should be
+    // bitwise and to only display the circle where it should be
 
 }
 
@@ -195,7 +195,7 @@ uint8_t select_to_hex(const uint8_t x, const uint8_t y){
             boxStartX = leftborder + boxoffset;
             break;
         case 1:
-            if (x <= middleleftborder + 1 ||x >= middlerightborder - 3|| y > middletopborder){
+            if (x <= middleleftborder + 1 || x >= middlerightborder - 3|| y > middletopborder){
                 return 0x00;
             }
             boxStartX = middleleftborder + boxoffset;
@@ -351,46 +351,40 @@ char checkwinside(){
             return gameboard[i];
         }
     }
-    //horizontal
+    // horizontal
     for (uint8_t i = 0; i < 3; i++){
         if (gameboard[i] == gameboard[i + 3] && gameboard[i + 3] == gameboard[i + 6] && gameboard[i] != ' '){
             return gameboard[i];
         }
     }
-    //vertial
+    // vertical
     if (gameboard[0] == gameboard[4] && gameboard[4] == gameboard[8] && gameboard[0] != ' '){
         return gameboard[0];
     }
     if (gameboard[2] == gameboard[4] && gameboard[4] == gameboard[6] && gameboard[2] != ' '){
         return gameboard[2];
     }
-    //2 diagonals
+    // 2 diagonals
     for (uint8_t i = 0; i < 9; i++){
-        if (gameboard[i] == ' '){
-            return 0;
-        }
+        if (gameboard[i] == ' ') return 0;
     }
-    return 'd'; //check draw or not
+    return 'd'; // check draw or not
 }
 
 int main(){
     char winner;
     JOY_init();
     display();
-    while (1){
+    while (1) {
         selectposition();
         winner = checkwinside();
-        if (winner != 0){
-            break;
-        }
+        if (winner != 0) break;
         play();
         winner = checkwinside();
-        if (winner != 0){
-            break;
-        }
+        if (winner != 0) break;
         DLY_ms(100);
-        }
-    switch (winner){
+    }
+    switch (winner) {
         case 'X':
             OLED_println("You \nwin!");
             JOY_sound(1000, 1000);
@@ -405,6 +399,4 @@ int main(){
             break;
     }
     _OLED_refresh_display();
-    return 0;
-
 }
