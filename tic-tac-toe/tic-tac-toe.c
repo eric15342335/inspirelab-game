@@ -80,6 +80,7 @@ uint8_t cross_to_hex(const uint8_t x, const uint8_t y){
             break;
         case 7:
             crosspixel = cross[x - boxStartX + 16] >> (8 - bottomoffset); //bottom boxes
+            break;
         default:
             return 0x00;
         }
