@@ -4,7 +4,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -I../emulator/include -Wall -Wextra -Wshadow -g
+CFLAGS = -I../emulator/include -Wall -Wextra -g -O1 -Wshadow -Wundef -Wswitch -Wcast-qual
 
 # Libraries
 UNAME_S := $(shell uname -s)

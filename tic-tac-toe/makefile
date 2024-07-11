@@ -1,24 +1,23 @@
-# cl -MD -GL -D_HAS_EXCEPTIONS=0 -GR- -O1 -Oy- -W4 -sdl -Iinclude include/oled_min.c Snake_Game.c user32.lib -Fe:snakegame.exe
+# cl -MD -GL -D_HAS_EXCEPTIONS=0 -GR- -O1 -Oy- -W4 -sdl -I../emulator/include ../emulator/include/oled_min.c tic-tac-toe.c user32.lib -Fe:tic-tac-toe.exe
 
 # Compiler
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Iinclude -Wall -Wextra -flto -O3
+CFLAGS = -I../emulator/include -Wall -Wextra -g -O1 -Wshadow -Wundef -Wswitch -Wcast-qual 
 
 # Libraries
 UNAME_S := $(shell uname -s)
+LDFLAGS =
 ifeq ($(UNAME_S), Darwin)
     LDFLAGS = -framework AudioToolbox -framework CoreFoundation -framework ApplicationServices -pthread
-else
-    LDFLAGS =
 endif
 
 # Source and object files
 SRCS = tic-tac-toe.c
-SRCS += $(wildcard include/*.c)
+SRCS += $(wildcard ../emulator/include/*.c)
 ifneq ($(UNAME_S), Darwin)
-SRCS := $(filter-out include/system_mac.c,$(SRCS))
+SRCS := $(filter-out ../emulator/include/system_mac.c,$(SRCS))
 endif
 OBJS = $(SRCS:.c=.o)
 
