@@ -8,20 +8,20 @@ A link to the original repository is below.
 
 ## How to use
 
-### Snake_Game
+### Snake Game
 
 1. Install MounRiver Studio and add the following to `PATH`:
     * `$(YourInstallDirectory)/MounRiver_Studio/toolchain/RISC-V Embedded GCC 12/bin`
         * For `riscv-none-elf` compiler toolchain
     * `$(YourInstallDirectory)/MounRiver_Studio/toolchain/Build Tools/bin`
         * For `make` tool
-2. Open terminal in the corresponding game folder (e.g. `Snake_Game`)
-3. type `make hex` on the terminal to make the executable
+2. Open terminal in the corresponding game folder (e.g. `snakegame`)
+3. type `make` on the terminal to make the executable for CH32V003
 4. flash the hex file into the game console (`CH32V003J4M6`) using WCH-LinkUtility (`Windows` only) or `todo`
 5. Have fun!
 
 * Notes:
-* the driver in `include` has been modified to allow direct copy from the emulator to run the RISC-V controller
+* the driver in `riscv/include` has been modified (compared to [original implementation]()) to allow direct copy from the emulator to run the RISC-V controller
 * buzzer function plays real frequency in Hz
 
 ### Emulator

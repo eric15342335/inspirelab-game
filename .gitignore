@@ -10,3 +10,5 @@
 **/*.exe
 **/*.obj
 **/.DS_Store
+html/
+latex/

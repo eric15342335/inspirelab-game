@@ -1,5 +1,7 @@
-PROJECT_NAME           = "CH32V003J4M6 Trials"
-INPUT                  = . utility/ include/
+PROJECT_NAME           = "CH32V003J4M6"
+INPUT                  = emulator riscv snakegame utils/pixelConvert.py README.md
+RECURSIVE              = YES
+USE_MDFILE_AS_MAINPAGE = README.md
 BUILTIN_STL_SUPPORT    = YES
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = YES

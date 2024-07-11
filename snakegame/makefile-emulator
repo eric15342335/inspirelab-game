@@ -1,29 +1,29 @@
-# cl -MD -GL -D_HAS_EXCEPTIONS=0 -GR- -O1 -Oy- -W4 -sdl -Iinclude include/oled_min.c Snake_Game.c user32.lib -Fe:snakegame.exe
+# cl -MD -GL -D_HAS_EXCEPTIONS=0 -GR- -O1 -Oy- -W4 -sdl -I../emulator/include ../emulator/include/oled_min.c snakegame.c user32.lib -Fe:snakegame.exe
 
 # Compiler
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Iinclude -Wall -Wextra -flto -O3
+CFLAGS = -I../emulator/include -Wall -Wextra -Wshadow -g
 
 # Libraries
 UNAME_S := $(shell uname -s)
+
+LDFLAGS =
 ifeq ($(UNAME_S), Darwin)
     LDFLAGS = -framework AudioToolbox -framework CoreFoundation -framework ApplicationServices -pthread
-else
-    LDFLAGS =
 endif
 
 # Source and object files
-SRCS = Snake_Game.c
-SRCS += $(wildcard include/*.c)
+SRCS = snakegame.c
+SRCS += $(wildcard ../emulator/include/*.c)
 ifneq ($(UNAME_S), Darwin)
-SRCS := $(filter-out include/system_mac.c,$(SRCS))
+SRCS := $(filter-out ../emulator/include/system_mac.c,$(SRCS))
 endif
 OBJS = $(SRCS:.c=.o)
 
 # Output binary
-TARGET = Snake_Game
+TARGET = snakegame
 
 # Default target
 all: $(TARGET)

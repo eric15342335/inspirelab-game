@@ -28,7 +28,7 @@
 #define JOY_left_pressed() is_key_pressed('A')
 #define JOY_right_pressed() is_key_pressed('D')
 
-inline bool is_key_pressed(char capitalkey) {
+static bool is_key_pressed(char capitalkey) {
     SHORT result =
         GetAsyncKeyState((int)capitalkey); // windows.h requires capital letters
     return (result & 0x8000) != 0;
