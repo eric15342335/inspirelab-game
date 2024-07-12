@@ -337,13 +337,13 @@ int main(void) {
         playMusic((noterange_t){12, 13});
     }
     OLED_clear();
+    display();
     OLED_println("Press any key to start");
     _OLED_refresh_display();
-    display();
     uint16_t seed = 0;
     while (!JOY_pad_pressed()) {
         seed++;
-        if (seed > 65530) {
+        if (seed > 0xFFF0) {
             seed = 0;
         } // boundary check of uint16_t rnval
         // generate a seed according to the time between boot and button pressed
@@ -356,6 +356,7 @@ int main(void) {
     currentDirection = direction(currentDirection);
     JOY_sound(1000, 100);
     // start the game
+    uint16_t score = 3;
     while (1) {
         for (uint8_t i = 0; i < 7; i++) {
             currentDirection = direction(currentDirection);
@@ -364,6 +365,7 @@ int main(void) {
         }
         // get the direction
         if (checkWallAndItself(currentDirection)) {
+            OLED_clear();
             OLED_println("Game Over!");
             _OLED_refresh_display();
             break;
@@ -379,16 +381,23 @@ int main(void) {
         if (apple) {
             JOY_sound(1000, 100);
             generate_apple();
+            score++;
         }
         display();
         // display the gameboard
         DLY_ms(50);
         // wait for a while
         if (checkWin()) {
+            OLED_clear();
             OLED_println("You Win!");
             _OLED_refresh_display();
             break;
         }
     }
-    DLY_ms(100000);
+    DLY_ms(1000);
+    OLED_print("Your score is: ");
+    OLED_printD(score);
+    OLED_println("\n\nPress 'Confirm' button to restart!");
+    _OLED_refresh_display();
+    while (!JOY_pad_pressed());
 }
