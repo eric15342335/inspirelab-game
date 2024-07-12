@@ -305,8 +305,17 @@ void display(void) {
 
 void selectposition(){
     selectpos = 4;
+    uint16_t randseed;
+    uint8_t i;
     display();
     while (1){
+        for (i = 0; i < 10; i++){
+            randseed++;
+            if (randseed == 65530){
+                randseed = 0;
+            }
+            DLY_ms(10); //much higher rate of switching randseed
+        }
         if (JOY_up_pressed() && selectpos > 2){
             selectpos -= 3;
             display();
@@ -327,23 +336,27 @@ void selectposition(){
             JOY_sound(1000, 100);
             gameboard[selectpos] = 'X';
             selectpos = -1;
+            JOY_setseed(randseed);
             display();
             break;
         }
-        DLY_ms(100);
+        DLY_ms(10);
     }
 }
 
 void play(){
-    uint8_t i;
-    for (i = 0; i < 9; i++){
-        if (gameboard[i] == ' '){
-            gameboard[i] = 'O';
-            display();
+    while (1){
+        uint8_t randpos = JOY_random() % 9;
+        if (gameboard[randpos] == ' '){
+            gameboard[randpos] = 'O';
+            JOY_sound(500, 200);
+            DLY_ms(300);
             break;
         }
     }
-} //temp for test only
+    display();
+
+} 
 
 char checkwinside(){
     for (uint8_t i = 0; i < 9; i += 3){
@@ -389,7 +402,7 @@ int main(){
             break;
         }
         DLY_ms(100);
-        }
+    }
     switch (winner){
         case 'X':
             OLED_println("You \nwin!");
