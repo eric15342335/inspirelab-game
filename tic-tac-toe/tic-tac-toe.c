@@ -242,6 +242,9 @@ uint8_t select_to_hex(const uint8_t x, const uint8_t y){
             }
             boxStartX = middlerightborder + boxoffset;
             break;
+        default:
+            boxStartX = 0;
+            break;
         }
     switch (y) {
         case 0:
@@ -309,6 +312,7 @@ void selectposition(){
     uint8_t i;
     display();
     while (1){
+        randseed = 0; //shut up compiler warning on windows 10
         for (i = 0; i < 10; i++){
             randseed++;
             if (randseed == 65530){
