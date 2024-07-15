@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 static uint8_t line, column, scroll;
 
@@ -100,7 +101,7 @@ void OLED_println(char * str) {
 
 void OLED_printD(uint32_t value) {
     char buffer[11];
-    itoa(value, buffer, 10);
+    snprintf(buffer, sizeof(buffer), "%u", value);
     OLED_print(buffer);
 }
 

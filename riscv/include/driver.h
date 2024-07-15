@@ -122,7 +122,7 @@ void JOY_sound(uint16_t freq, uint16_t dur) {
   DLY_us(delay_us);
   PIN_high(PIN_BEEP);
   DLY_us(delay_us);
-}
+} //real frequency
 
 // Pseudo random number generator
 uint16_t rnval;
