@@ -13,15 +13,15 @@ uint8_t circlecross_to_hex(const uint8_t x, const uint8_t y, char player) {
     #define bottomoffset 5
     uint8_t boxStartX;
     uint8_t displaycirclecross;
-    uint8_t * pic;
+    const uint8_t * pic;
     if (x <= leftborder + 1|| x >= rightborder - 3){
         return 0x00;
     }
     if (player == 'O'){
-        pic = (uint8_t * )circle;
+        pic = (const uint8_t * )circle;
     }
     else if (player == 'X'){
-        pic = (uint8_t * )cross;
+        pic = (const uint8_t * )cross;
     }
     else {
         return 0x00;
