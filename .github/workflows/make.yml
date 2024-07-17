@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
         game: [tic-tac-toe, snakegame, donut]
 
     name: "Build ${{ matrix.game }} on ${{ matrix.os }}"
