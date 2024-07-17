@@ -1,4 +1,4 @@
-# cl -MD -GL -D_HAS_EXCEPTIONS=0 -GR- -O1 -Oy- -W4 -sdl -I../emulator/include ../emulator/include/oled_min.c sample.c user32.lib -Fe:sample.exe
+# cl -MD -GL -D_HAS_EXCEPTIONS=0 -GR- -O1 -Oy- -W4 -sdl -I../emulator/include ../emulator/include/oled_min.c donut.c user32.lib -Fe:donut.exe
 
 # Compiler
 CC = gcc
@@ -15,7 +15,7 @@ ifeq ($(UNAME_S), Darwin)
 endif
 
 # Source and object files
-SRCS = sample.c
+SRCS = donut.c
 SRCS += $(wildcard ../emulator/include/*.c)
 ifneq ($(UNAME_S), Darwin)
 SRCS := $(filter-out ../emulator/include/system_mac.c,$(SRCS))
@@ -23,7 +23,7 @@ endif
 OBJS = $(SRCS:.c=.o)
 
 # Output binary
-TARGET = sample
+TARGET = donut
 
 # Default target
 all: $(TARGET)

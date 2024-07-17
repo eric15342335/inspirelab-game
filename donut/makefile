@@ -8,8 +8,8 @@
 # ===================================================================================
 
 # Files and Folders
-MAINFILE = sample.c
-TARGET   = sample
+MAINFILE = donut.c
+TARGET   = donut
 INCLUDE  = ../riscv/include
 
 # Microcontroller Settings

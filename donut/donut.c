@@ -35,7 +35,6 @@ inline void setPixel(int x, int y, uint8_t color) {
         }
     }
 }
-
 #define R(mul, shift, x, y) \
     _ = x; \
     x -= (mul * y) >> (shift); \
@@ -55,7 +54,7 @@ void drawDonut(int frame) {
     }
 
     int sj = 0, cj = 1024;
-    for (int j = 0; j < 2; j++) { // original 90
+    for (int j = 0; j < 1; j++) { // original 90
         int si = 0, ci = 1024;  // sine and cosine of angle i
         for (int i = 0; i < 324; i++) { // original 324
             int R1 = 2, R2 = 4096, K2 = 10240 * 1024;  // Adjusted for larger donut
@@ -69,7 +68,7 @@ void drawDonut(int frame) {
                 x = SCREEN_X / 2 + (SCREEN_X / 2) * ((cB * x1) - (sB * x4)) / x6,
                 y = SCREEN_Y / 2 + (SCREEN_Y / 2) * ((cB * x4) + (sB * x1)) / x6;
 
-            if (SCREEN_Y > y && y > 0 && x > 0 && SCREEN_X > x) {
+            if (y >= 0 && y < SCREEN_Y && x >= 0 && x < SCREEN_X) {
                 setPixel(x, y, 1); // Set pixel without light contrast
             }
             R(5, 8, ci, si);  // rotate i
@@ -84,13 +83,16 @@ int main() {
     DLY_ms(100);
     OLED_clear();
     int frame = 0;
-
+    int frame_delta = 10;
     while (1) {
         drawDonut(frame);
         display();
-        frame += 5;
-        if (frame >= 100) {
-            frame = 0;
+        frame += frame_delta;
+        if (frame >= 300) {
+            frame_delta = -frame_delta;
+        }
+        if (frame <= 0) {
+            frame_delta = -frame_delta;
         }
         //DLY_ms(1);
         _OLED_refresh_display(); // Refresh the display
