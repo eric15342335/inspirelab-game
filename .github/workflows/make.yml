@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-emulator:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        game: [tic-tac-toe, snakegame, donut]
+
+    name: "Build ${{ matrix.game }} on ${{ matrix.os }}"
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Build emulator executable
+      run: |
+        cd ${{ matrix.game }}
+        make
+        mkdir -p bin
+        mv ${{ matrix.game }} bin/
+
+    - name: Upload executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.game }}-${{ matrix.os }}
+        path: ${{ matrix.game }}/bin
+        compression-level: 9
+        if-no-files-found: error
