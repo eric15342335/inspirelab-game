@@ -36,29 +36,13 @@ inline void setPixel(int x, int y, uint8_t color) {
     }
 }
 
-
-static inline int FastMultiply( uint32_t big_num, uint32_t small_num ) __attribute__((section(".data")));
-static inline int FastMultiply( uint32_t big_num, uint32_t small_num )
-{
-	int ret = 0;
-	uint32_t multiplicand = small_num;
-	uint32_t mutliplicant = big_num;
-	do
-	{
-		if( multiplicand & 1 )
-			ret += mutliplicant;
-		mutliplicant<<=1;
-		multiplicand>>=1;
-	} while( multiplicand );
-	return ret;
-}
 #define R(mul, shift, x, y) \
-    _ = (x); \
-    (x) -= FastMultiply((mul), (y)) >> (shift); \
-    (y) += FastMultiply((mul), _) >> (shift); \
-    _ = (3145728 - FastMultiply((x), (x)) - FastMultiply((y), (y))) >> 11; \
-    (x) = FastMultiply((x), _) >> 10; \
-    (y) = FastMultiply((y), _) >> 10;
+    _ = x; \
+    x -= (mul * y) >> (shift); \
+    y += (mul * _) >> (shift); \
+    _ = (3145728 - (x * x) - (y * y)) >> 11; \
+    x = (x * _) >> 10; \
+    y = (y * _) >> 10;
 
 void drawDonut(int frame) {
     int sA = 1024, cA = 0, sB = 1024, cB = 0, _;
@@ -71,19 +55,19 @@ void drawDonut(int frame) {
     }
 
     int sj = 0, cj = 1024;
-    for (int j = 0; j < 1; j++) { // original 90
+    for (int j = 0; j < 2; j++) { // original 90
         int si = 0, ci = 1024;  // sine and cosine of angle i
         for (int i = 0; i < 324; i++) { // original 324
-            int R1 = 2, R2 = 4096, K2 = FastMultiply(10240, 1024);  // Adjusted for larger donut
-            int x0 = FastMultiply(R1, cj) + R2,
-                x1 = FastMultiply(ci, x0) >> 10,
-                x2 = FastMultiply(cA, sj) >> 10,
-                x3 = FastMultiply(si, x0) >> 10,
-                x4 = FastMultiply(R1, x2) - (FastMultiply(sA, x3) >> 10),
-                x5 = FastMultiply(sA, sj) >> 10,
-                x6 = K2 + FastMultiply(R1, 1024 * x5) + FastMultiply(cA, x3),
-                x = SCREEN_X / 2 + (SCREEN_X / 2) * (FastMultiply(cB, x1) - FastMultiply(sB, x4)) / x6,
-                y = SCREEN_Y / 2 + (SCREEN_Y / 2) * (FastMultiply(cB, x4) + FastMultiply(sB, x1)) / x6;
+            int R1 = 2, R2 = 4096, K2 = 10240 * 1024;  // Adjusted for larger donut
+            int x0 = (R1 * cj) + R2,
+                x1 = (ci * x0) >> 10,
+                x2 = (cA * sj) >> 10,
+                x3 = (si * x0) >> 10,
+                x4 = (R1 * x2) - ((sA * x3) >> 10),
+                x5 = (sA * sj) >> 10,
+                x6 = K2 + (R1 * 1024 * x5) + (cA * x3),
+                x = SCREEN_X / 2 + (SCREEN_X / 2) * ((cB * x1) - (sB * x4)) / x6,
+                y = SCREEN_Y / 2 + (SCREEN_Y / 2) * ((cB * x4) + (sB * x1)) / x6;
 
             if (SCREEN_Y > y && y > 0 && x > 0 && SCREEN_X > x) {
                 setPixel(x, y, 1); // Set pixel without light contrast
@@ -104,8 +88,8 @@ int main() {
     while (1) {
         drawDonut(frame);
         display();
-        frame += 4;
-        if (frame >= 1024) {
+        frame += 5;
+        if (frame >= 100) {
             frame = 0;
         }
         //DLY_ms(1);
