@@ -22,7 +22,7 @@ jobs:
     - name: Build emulator executable
       run: |
         cd ${{ matrix.game }}
-        make
+        make emulator
         mkdir -p bin
         mv ${{ matrix.game }} bin/
 
