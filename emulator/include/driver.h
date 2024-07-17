@@ -34,7 +34,7 @@ static inline bool is_key_pressed(char capitalkey) {
     return (result & 0x8000) != 0;
 }
 
-#else
+#elif defined(__APPLE__)
 #include "system_mac.h"
 #include <unistd.h>
 
