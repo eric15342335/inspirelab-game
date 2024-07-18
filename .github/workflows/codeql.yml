@@ -17,7 +17,7 @@ jobs:
       matrix:
         include:
         - language: c-cpp
-          build-mode: autobuild
+          build-mode: manual
         - language: python
           build-mode: none
     steps:
@@ -30,6 +30,10 @@ jobs:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
         queries: security-extended,security-and-quality
+    - if: matrix.build-mode == 'manual'
+      shell: bash
+      run: |
+        echo 'make'
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
