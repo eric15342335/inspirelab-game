@@ -319,6 +319,7 @@ void displayData(uint8_t _image_data[]) {
 
 int main(void) {
     game_init();
+    playAllMusic();
     OLED_clear();
     {
         uint8_t image_data_2[1024];
